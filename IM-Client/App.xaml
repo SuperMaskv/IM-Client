@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:IM_Client"
              xmlns:views="clr-namespace:IM_Client.Views"
+             xmlns:enums="clr-namespace:IM_Client.Enums"
+             xmlns:utils="clr-namespace:IM_Client.Utils"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
@@ -43,13 +45,20 @@
 
             <!--Locals-->
             <DataTemplate x:Key="ChatTemplate">
-                <views:ChatView/>
+                <views:ChatView />
+            </DataTemplate>
+            <DataTemplate x:Key="LoginTemplate">
+                <views:LoginView />
             </DataTemplate>
 
 
             <Style x:Key="ChatContentStyle" TargetType="ContentControl">
-                <Setter Property="ContentTemplate" Value="{StaticResource ChatTemplate}"/>
-
+                <Setter Property="ContentTemplate" Value="{StaticResource ChatTemplate}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding UserModes}" Value="{x:Static enums:UserModes.Chat}" >
+                        <Setter Property="ContentTemplate" Value="{Binding ChatTemplate}"></Setter>
+                    </DataTrigger>
+                </Style.Triggers>
             </Style>
         </ResourceDictionary>
     </Application.Resources>
