@@ -4,22 +4,119 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:IM_Client.Views"
+             xmlns:data="clr-namespace:IM_Client.Data"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800">
+             Background="{DynamicResource MaterialDesignPaper}"
+             d:DesignHeight="400" d:DesignWidth="650"
+             d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True,Type={x:Type data:SampleMainWindowViewModel}}">
+    <UserControl.Resources>
+        <DataTemplate x:Key="ParticipantsDataTemplate">
+            <Border BorderThickness="0 0 0 1" BorderBrush="{StaticResource MaterialDesignDivider}"
+                    Width="{Binding Path=ActualWidth,RelativeSource={RelativeSource FindAncestor,AncestorType=ListBoxItem}}"
+                    Height="50" Margin="-2 0 0 0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="5" />
+                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="20" />
+                    </Grid.ColumnDefinitions>
+
+                    <Rectangle x:Name="ParticipantRct" Fill="{DynamicResource PrimaryHueMidBrush}"
+                               Visibility="Hidden" />
+
+                    <!--头像-->
+                    <Grid Grid.Column="1" Margin="6" SnapsToDevicePixels="True">
+                        <Grid.OpacityMask>
+                            <VisualBrush Visual="{Binding  ElementName=ClipEllipse}" />
+                        </Grid.OpacityMask>
+                        <Ellipse x:Name="ClipEllipse" Fill="White" />
+                        <materialDesign:PackIcon Kind="AccountCircle" SnapsToDevicePixels="True"
+                                                 Width="Auto" Height="Auto" Margin="-4"
+                                                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                        <!--todo:-->
+                        <Image Source="{Binding Photo,Converter={StaticResource BitmapSourceConverter},
+                            TargetNullValue={}}"/>
+                    </Grid>
+
+                    <!--用户名-->
+                    <TextBlock Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left"
+                               Margin="5 0" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
+                               Text="{Binding UserName}" SnapsToDevicePixels="True" />
+                    
+                    <!--未读消息标志-->
+                    <materialDesign:PackIcon Name="NewMessageIcon" Grid.Column="3" SnapsToDevicePixels="True"
+                                             VerticalAlignment="Center" HorizontalAlignment="Center"
+                                             Kind="MessageReplyText" Opacity="0.7" Visibility="Hidden"/>
+
+                    <!--在线状态-->
+                    <Ellipse Grid.Column="4" Width="8" Height="8"
+                             VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Ellipse.Style>
+                            <Style TargetType="Ellipse">
+                                <Setter Property="Fill" Value="Red"/>
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding DataContext.IsConnected,
+                                                RelativeSource={RelativeSource FindAncestor,AncestorType=UserControl}}"
+                                                       Value="True"/>
+                                            <Condition Binding="{Binding IsLoggedIn}" Value="True"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <MultiDataTrigger.Setters>
+                                            <Setter Property="Fill" Value="LawnGreen"/>
+                                        </MultiDataTrigger.Setters>
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Ellipse.Style>
+                    </Ellipse>
+                </Grid>
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding HasSentNewMessage}" Value="True">
+                    <Setter TargetName="NewMessageIcon" Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=IsSelected,
+                    RelativeSource={RelativeSource FindAncestor,AncestorType=ListBoxItem}}"
+                             Value="True">
+                    <Setter TargetName="ParticipantRct" Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+        <DataTemplate x:Key="MessagesDataTemplate">
+            <Border />
+            <DataTemplate.Triggers>
+
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="220"/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="220" />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <Border Grid.RowSpan="2" BorderThickness="0 0 1 0">
-            <ListBox>
-
-            </ListBox>
+        <!--Participants-->
+        <Border Grid.RowSpan="2" BorderThickness="0 0 1 0"
+                BorderBrush="{StaticResource MaterialDesignDivider}">
+            <!--todo:Binding-->
+            <ListBox ItemsSource="{Binding Participants}"
+                     ItemTemplate="{DynamicResource ParticipantsDataTemplate}"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto" />
         </Border>
+
+        <!--Messages-->
+        <!--todo:Binding-->
+        <ItemsControl x:Name="MessagesItemsCtrl" Grid.Column="1" Margin="0 5 0 0"
+                      ItemsSource="{Binding}"
+                      ItemTemplate="{DynamicResource MessagesDataTemplate}" />
     </Grid>
 </UserControl>

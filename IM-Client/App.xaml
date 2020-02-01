@@ -60,6 +60,8 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
+
+            <utils:ByteBitmapSourceConverter x:Key="BitmapSourceConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

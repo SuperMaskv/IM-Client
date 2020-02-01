@@ -14,7 +14,6 @@ namespace IM_Client.Utils
         public ViewModelLocator()
         {
             container=new UnityContainer();
-            container.RegisterType<>()
         }
     }
 }

@@ -16,6 +16,6 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid >
-        <ContentControl Content="{Binding}" Style="{StaticResource }"/>
+        <ContentControl Content="{Binding}" Style="{StaticResource ChatContentStyle}"/>
     </Grid>
 </Window>
