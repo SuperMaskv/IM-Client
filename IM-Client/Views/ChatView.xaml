@@ -6,11 +6,124 @@
              xmlns:local="clr-namespace:IM_Client.Views"
              xmlns:data="clr-namespace:IM_Client.Data"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:utils="clr-namespace:IM_Client.Utils"
              mc:Ignorable="d"
              Background="{DynamicResource MaterialDesignPaper}"
+             SnapsToDevicePixels="True"
              d:DesignHeight="400" d:DesignWidth="650"
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True,Type={x:Type data:SampleMainWindowViewModel}}">
     <UserControl.Resources>
+        <Style x:Key="SendButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryHueDarkBrush}" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FontWeight" Value="Medium" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid Background="Transparent">
+                            <materialDesign:PackIcon Name="SendIcon" Kind="Send"
+                                                     Foreground="{TemplateBinding Foreground}"
+                                                     VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                     HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                     Margin="{TemplateBinding Padding}"
+                                                     Width="Auto" Height="Auto" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="SendIcon" Property="Foreground"
+                                        Value="{DynamicResource PrimaryHueMidBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="SendIcon" Property="Foreground"
+                                        Value="{DynamicResource PrimaryHueMidBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.23" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ImageButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource SendButtonStyle}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid Background="Transparent">
+                            <materialDesign:PackIcon Name="PhotoIcon" Kind="Image"
+                                                     HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                     VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                     Margin="{TemplateBinding Padding}"
+                                                     Width="Auto" Height="Auto" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="PhotoIcon" Property="Foreground"
+                                        Value="{DynamicResource PrimaryHueMidBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="PhotoIcon" Property="Foreground"
+                                        Value="{DynamicResource PrimaryHueMidBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.23" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="ListBoxItem" x:Key="ParticipantsListBoxItemStyle">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="HorizontalContentAlignment"
+                    Value="{Binding HorizontalContentAlignment,RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
+            <Setter Property="VerticalContentAlignment"
+                    Value="{Binding VerticalContentAlignment,RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="2 0 0 0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <Border x:Name="Bd"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}"
+                                Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalAlignment}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" TargetName="Bd" Value="SkyBlue" />
+                                <Setter Property="Foreground"
+                                        Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightTextBrush}}" />
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsSelected" Value="True" />
+                                    <Condition Property="Selector.IsSelectionActive" Value="False" />
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Background" TargetName="Bd" Value="SkyBlue" />
+                                <Setter Property="Foreground"
+                                        Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightTextBrush}}" />
+                            </MultiTrigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground"
+                                        Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <DataTemplate x:Key="ParticipantsDataTemplate">
             <Border BorderThickness="0 0 0 1" BorderBrush="{StaticResource MaterialDesignDivider}"
                     Width="{Binding Path=ActualWidth,RelativeSource={RelativeSource FindAncestor,AncestorType=ListBoxItem}}"
@@ -36,37 +149,39 @@
                         <materialDesign:PackIcon Kind="AccountCircle" SnapsToDevicePixels="True"
                                                  Width="Auto" Height="Auto" Margin="-4"
                                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                        <!--todo:-->
-                        <Image Source="{Binding Photo,Converter={StaticResource BitmapSourceConverter},
-                            TargetNullValue={}}"/>
+                        <Image
+                            Source="{Binding Photo,Converter={StaticResource BitmapSourceConverter},
+                            TargetNullValue={StaticResource BlankImage}}"
+                            Stretch="UniformToFill" />
                     </Grid>
 
                     <!--用户名-->
                     <TextBlock Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left"
                                Margin="5 0" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
                                Text="{Binding UserName}" SnapsToDevicePixels="True" />
-                    
+
                     <!--未读消息标志-->
                     <materialDesign:PackIcon Name="NewMessageIcon" Grid.Column="3" SnapsToDevicePixels="True"
                                              VerticalAlignment="Center" HorizontalAlignment="Center"
-                                             Kind="MessageReplyText" Opacity="0.7" Visibility="Hidden"/>
+                                             Kind="MessageReplyText" Opacity="0.7" Visibility="Hidden" />
 
                     <!--在线状态-->
                     <Ellipse Grid.Column="4" Width="8" Height="8"
                              VerticalAlignment="Center" HorizontalAlignment="Center">
                         <Ellipse.Style>
                             <Style TargetType="Ellipse">
-                                <Setter Property="Fill" Value="Red"/>
+                                <Setter Property="Fill" Value="Red" />
                                 <Style.Triggers>
                                     <MultiDataTrigger>
                                         <MultiDataTrigger.Conditions>
-                                            <Condition Binding="{Binding DataContext.IsConnected,
+                                            <Condition
+                                                Binding="{Binding DataContext.IsConnected,
                                                 RelativeSource={RelativeSource FindAncestor,AncestorType=UserControl}}"
-                                                       Value="True"/>
-                                            <Condition Binding="{Binding IsLoggedIn}" Value="True"/>
+                                                Value="True" />
+                                            <Condition Binding="{Binding IsLoggedIn}" Value="True" />
                                         </MultiDataTrigger.Conditions>
                                         <MultiDataTrigger.Setters>
-                                            <Setter Property="Fill" Value="LawnGreen"/>
+                                            <Setter Property="Fill" Value="LawnGreen" />
                                         </MultiDataTrigger.Setters>
                                     </MultiDataTrigger>
                                 </Style.Triggers>
@@ -77,19 +192,76 @@
             </Border>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding HasSentNewMessage}" Value="True">
-                    <Setter TargetName="NewMessageIcon" Property="Visibility" Value="Visible"/>
+                    <Setter TargetName="NewMessageIcon" Property="Visibility" Value="Visible" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding Path=IsSelected,
+                <DataTrigger
+                    Binding="{Binding Path=IsSelected,
                     RelativeSource={RelativeSource FindAncestor,AncestorType=ListBoxItem}}"
-                             Value="True">
-                    <Setter TargetName="ParticipantRct" Property="Visibility" Value="Visible"/>
+                    Value="True">
+                    <Setter TargetName="ParticipantRct" Property="Visibility" Value="Visible" />
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
         <DataTemplate x:Key="MessagesDataTemplate">
-            <Border />
-            <DataTemplate.Triggers>
+            <Border Name="MessageBorder" MinHeight="40" MinWidth="280" BorderThickness="1" Background="Azure"
+                    Margin="10 0 60 10" BorderBrush="Gray" CornerRadius="4" HorizontalAlignment="Left">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition Height="15" />
+                    </Grid.RowDefinitions>
+                    <Grid x:Name="ImageMessageGrid" Margin="6 6 6 5">
+                        <Grid.OpacityMask>
+                            <VisualBrush Visual="{Binding ElementName=ClipBorder}" />
+                        </Grid.OpacityMask>
+                        <Border x:Name="ClipBorder" CornerRadius="3" Background="White" />
+                        <Image Stretch="UniformToFill" Cursor="Hand"
+                               ToolTip="使用默认图片查看器打开"
+                               Source="{Binding Picture}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="MouseLeftButtonUp">
+                                    <i:InvokeCommandAction
+                                        Command="{Binding DataContext.OpenImageCommand,
+                                        RelativeSource={RelativeSource FindAncestor,AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </Image>
+                    </Grid>
+                    <TextBlock x:Name="MessageTxtBlock" Grid.Row="1" Margin="7 5 7 0" TextWrapping="Wrap"
+                               HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                               Text="{Binding Message}"/>
+                    <TextBlock Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Stretch"
+                               Margin="0 0 5 0" Opacity="0.8" FontSize="10"
+                               Text="{Binding Time,StringFormat={}{0:t}}"/>
+                </Grid>
 
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsOriginNative}" Value="True">
+                    <Setter TargetName="MessageBorder" Property="HorizontalAlignment" Value="Right"/>
+                    <Setter TargetName="MessageBorder" Property="Margin" Value="60 0 10 10"/>
+                    <Setter TargetName="MessageBorder" Property="Background" Value="DeepSkyBlue"/>
+                    <Setter TargetName="MessageBorder" Property="BorderBrush" Value="DodgerBlue"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Picture}" Value="{x:Null}">
+                    <Setter TargetName="ImageMessageGrid" Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Message}" Value="{x:Null}">
+                    <Setter TargetName="MessageTxtBlock" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="MessageBorder" Property="MaxWidth" Value="320"/>
+                </DataTrigger>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding Message}" Value="{x:Null}"/>
+                        <Condition Binding="{Binding IsOriginNative}" Value="True"/>
+                    </MultiDataTrigger.Conditions>
+                    <MultiDataTrigger.Setters>
+                        <Setter TargetName="MessageBorder" Property="Margin" Value="0 0 10 10"/>
+                        <Setter TargetName="MessageBorder" Property="HorizontalAlignment" Value="Right"/>
+                    </MultiDataTrigger.Setters>
+                </MultiDataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
     </UserControl.Resources>
@@ -104,19 +276,66 @@
         </Grid.ColumnDefinitions>
 
         <!--Participants-->
-        <Border Grid.RowSpan="2" BorderThickness="0 0 1 0"
+        <Border Grid.RowSpan="2" BorderThickness="0 0 1 0" SnapsToDevicePixels="True"
                 BorderBrush="{StaticResource MaterialDesignDivider}">
-            <!--todo:Binding-->
             <ListBox ItemsSource="{Binding Participants}"
                      ItemTemplate="{DynamicResource ParticipantsDataTemplate}"
+                     ItemContainerStyle="{DynamicResource ParticipantsListBoxItemStyle}"
+                     SelectedItem="{Binding SelectedParticipant}"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                      ScrollViewer.VerticalScrollBarVisibility="Auto" />
         </Border>
 
         <!--Messages-->
-        <!--todo:Binding-->
         <ItemsControl x:Name="MessagesItemsCtrl" Grid.Column="1" Margin="0 5 0 0"
-                      ItemsSource="{Binding}"
-                      ItemTemplate="{DynamicResource MessagesDataTemplate}" />
+                      ItemsSource="{Binding SelectedParticipant.ChatMessages}"
+                      ItemTemplate="{DynamicResource MessagesDataTemplate}"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <i:Interaction.Behaviors>
+                <utils:BringNewItemIntoViewBehavior />
+            </i:Interaction.Behaviors>
+            <ItemsControl.Template>
+                <ControlTemplate TargetType="ItemsControl">
+                    <ScrollViewer>
+                        <ItemsPresenter />
+                    </ScrollViewer>
+                </ControlTemplate>
+            </ItemsControl.Template>
+        </ItemsControl>
+
+        <Border Grid.Row="1" Grid.Column="1"
+                BorderBrush="{DynamicResource MaterialDesignDivider}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="50" />
+                </Grid.ColumnDefinitions>
+                <!--Message-->
+                <Border Margin="10 10 0 10" MaxHeight="80"
+                        BorderThickness="1" BorderBrush="{DynamicResource MaterialDesignDivider}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="30" />
+                        </Grid.ColumnDefinitions>
+                        <!--Text-->
+                        <TextBox x:Name="MessageTxtBox" BorderBrush="Transparent"
+                                 TextWrapping="Wrap" AcceptsReturn="True" CaretBrush="Gray"
+                                 VerticalScrollBarVisibility="Auto"
+                                 Text="{Binding TextMessage,UpdateSourceTrigger=PropertyChanged}" />
+                        <!--Image-->
+                        <!--todo:Command Binding-->
+                        <Button Grid.Column="1" Foreground="#FF6E6E6E"
+                                Margin="4" Style="{DynamicResource ImageButtonStyle}"
+                                Command="{Binding}" />
+                    </Grid>
+                </Border>
+                <!--SendButton-->
+                <!--todo:Command Binding-->
+                <Button x:Name="SendButton" Grid.Column="1" Margin="10"
+                        Style="{DynamicResource SendButtonStyle}"
+                        Command="{Binding}" />
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>

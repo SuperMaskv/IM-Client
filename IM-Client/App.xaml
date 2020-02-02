@@ -62,6 +62,7 @@
             </Style>
 
             <utils:ByteBitmapSourceConverter x:Key="BitmapSourceConverter"/>
+            <BitmapImage x:Key="BlankImage" UriSource="/Imgs/blank.png"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -95,6 +95,7 @@
     <Compile Include="Models\ChatMessage.cs" />
     <Compile Include="Models\Participant.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Utils\BringNewItemIntoViewBehavior.cs" />
     <Compile Include="Utils\ByteBitmapSourceConverter.cs" />
     <Compile Include="Utils\ViewModelLocator.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
