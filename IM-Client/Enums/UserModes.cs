@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace IM_Client.Enums
+﻿namespace IM_Client.Enums
 {
     public enum UserModes
     {
-        Login,Chat
+        Login, Chat
     }
 }

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using IM_Client.Models;
+using IM_Client.ViewModels;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using IM_Client.Models;
-using IM_Client.ViewModels;
 
 namespace IM_Client.Data
 {

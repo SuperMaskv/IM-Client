@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -21,7 +17,7 @@ namespace IM_Client.Utils
 
             var img = value as byte[];
             ImageSourceConverter converter = new ImageSourceConverter();
-            var bmpSrc = (BitmapSource) converter.ConvertFrom(img);
+            var bmpSrc = (BitmapSource)converter.ConvertFrom(img);
             return bmpSrc;
         }
 

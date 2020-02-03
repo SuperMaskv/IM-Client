@@ -231,35 +231,34 @@
                     </Grid>
                     <TextBlock x:Name="MessageTxtBlock" Grid.Row="1" Margin="7 5 7 0" TextWrapping="Wrap"
                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                               Text="{Binding Message}"/>
+                               Text="{Binding Message}" />
                     <TextBlock Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Stretch"
                                Margin="0 0 5 0" Opacity="0.8" FontSize="10"
-                               Text="{Binding Time,StringFormat={}{0:t}}"/>
+                               Text="{Binding Time,StringFormat={}{0:t}}" />
                 </Grid>
-
             </Border>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding IsOriginNative}" Value="True">
-                    <Setter TargetName="MessageBorder" Property="HorizontalAlignment" Value="Right"/>
-                    <Setter TargetName="MessageBorder" Property="Margin" Value="60 0 10 10"/>
-                    <Setter TargetName="MessageBorder" Property="Background" Value="DeepSkyBlue"/>
-                    <Setter TargetName="MessageBorder" Property="BorderBrush" Value="DodgerBlue"/>
+                    <Setter TargetName="MessageBorder" Property="HorizontalAlignment" Value="Right" />
+                    <Setter TargetName="MessageBorder" Property="Margin" Value="60 0 10 10" />
+                    <Setter TargetName="MessageBorder" Property="Background" Value="DeepSkyBlue" />
+                    <Setter TargetName="MessageBorder" Property="BorderBrush" Value="DodgerBlue" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Picture}" Value="{x:Null}">
-                    <Setter TargetName="ImageMessageGrid" Property="Visibility" Value="Collapsed"/>
+                    <Setter TargetName="ImageMessageGrid" Property="Visibility" Value="Collapsed" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Message}" Value="{x:Null}">
-                    <Setter TargetName="MessageTxtBlock" Property="Visibility" Value="Collapsed"/>
-                    <Setter TargetName="MessageBorder" Property="MaxWidth" Value="320"/>
+                    <Setter TargetName="MessageTxtBlock" Property="Visibility" Value="Collapsed" />
+                    <Setter TargetName="MessageBorder" Property="MaxWidth" Value="320" />
                 </DataTrigger>
                 <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding Message}" Value="{x:Null}"/>
-                        <Condition Binding="{Binding IsOriginNative}" Value="True"/>
+                        <Condition Binding="{Binding Message}" Value="{x:Null}" />
+                        <Condition Binding="{Binding IsOriginNative}" Value="True" />
                     </MultiDataTrigger.Conditions>
                     <MultiDataTrigger.Setters>
-                        <Setter TargetName="MessageBorder" Property="Margin" Value="0 0 10 10"/>
-                        <Setter TargetName="MessageBorder" Property="HorizontalAlignment" Value="Right"/>
+                        <Setter TargetName="MessageBorder" Property="Margin" Value="0 0 10 10" />
+                        <Setter TargetName="MessageBorder" Property="HorizontalAlignment" Value="Right" />
                     </MultiDataTrigger.Setters>
                 </MultiDataTrigger>
             </DataTemplate.Triggers>

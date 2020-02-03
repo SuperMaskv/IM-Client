@@ -15,7 +15,7 @@
             <i:InvokeCommandAction Command="" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    <Grid >
-        <ContentControl Content="{Binding}" Style="{StaticResource ChatContentStyle}"/>
+    <Grid>
+        <ContentControl Content="{Binding}" Style="{StaticResource ChatContentStyle}" />
     </Grid>
 </Window>
