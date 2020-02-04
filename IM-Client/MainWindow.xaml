@@ -12,7 +12,10 @@
         d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True,Type={x:Type data:SampleMainWindowViewModel}}"
         Title="IM-Client" Height="450" Width="800" TitleCaps="False" TitleCharacterCasing="Normal"
         ShowTitleBar="True" BorderBrush="{DynamicResource PrimaryHueDarkBrush}"
-        Background="{DynamicResource MaterialDesignPaper}">
+        AllowsTransparency="True">
+    <metro:MetroWindow.Background>
+        <SolidColorBrush Opacity="0.8" Color="White"/>
+    </metro:MetroWindow.Background>
 
     <i:Interaction.Triggers>
         <i:EventTrigger>
