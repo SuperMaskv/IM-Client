@@ -4,8 +4,44 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:IM_Client.Views"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             SnapsToDevicePixels="True"
              mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="400" d:DesignWidth="600">
     <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" 
+                             Width="240" Height="380">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="160"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <materialDesign:ColorZone 
+                    Mode="Light" Margin="0" VerticalAlignment="Stretch" Background="WhiteSmoke">
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Center"
+                        Height="120" Width="120">
+                        <Grid.OpacityMask>
+                            <VisualBrush Visual="{Binding ElementName=ClipEllipse}"/>
+                        </Grid.OpacityMask>
+                        <Ellipse x:Name="ClipEllipse" Fill="White" Stroke="Black"/>
+                        <materialDesign:PackIcon Kind="AccountCircle" Width="144" Height="144" Margin="-12"/>
+                        <Image Source="{Binding ProfilePic,FallbackValue={StaticResource BlankImage},TargetNullValue={StaticResource BlankImage}}"/>
+                        <Ellipse Stroke="Black" StrokeThickness="1" UseLayoutRounding="True" Opacity="0.2"/>
+                    </Grid>
+                </materialDesign:ColorZone>
+            </Grid>
+
+        </materialDesign:Card>
+        <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="1">
+            <Grid>
+
+            </Grid>
+        </Border>
+
     </Grid>
 </UserControl>

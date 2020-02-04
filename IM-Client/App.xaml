@@ -51,18 +51,18 @@
                 <views:LoginView />
             </DataTemplate>
 
-
             <Style x:Key="ChatContentStyle" TargetType="ContentControl">
-                <Setter Property="ContentTemplate" Value="{StaticResource ChatTemplate}" />
+                <Setter Property="ContentTemplate" Value="{StaticResource LoginTemplate}" />
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding UserModes}" Value="{x:Static enums:UserModes.Chat}" >
-                        <Setter Property="ContentTemplate" Value="{Binding ChatTemplate}"></Setter>
+                    <DataTrigger Binding="{Binding UserModes}" Value="{x:Static enums:UserModes.Chat}">
+                        <Setter Property="ContentTemplate" Value="{Binding ChatTemplate}"/>
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
 
-            <utils:ByteBitmapSourceConverter x:Key="BitmapSourceConverter"/>
-            <BitmapImage x:Key="BlankImage" UriSource="/Imgs/blank.png"/>
+            <utils:ViewModelLocator x:Key="VMLocator"/>
+            <utils:ByteBitmapSourceConverter x:Key="BitmapSourceConverter" />
+            <BitmapImage x:Key="BlankImage" UriSource="/Imgs/blank.png" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

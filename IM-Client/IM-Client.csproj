@@ -95,9 +95,12 @@
     <Compile Include="Models\ChatMessage.cs" />
     <Compile Include="Models\Participant.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Services\ChatServices.cs" />
+    <Compile Include="Services\IChatServices.cs" />
     <Compile Include="Utils\BringNewItemIntoViewBehavior.cs" />
     <Compile Include="Utils\ByteBitmapSourceConverter.cs" />
     <Compile Include="Utils\ViewModelLocator.cs" />
+    <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\ChatView.xaml.cs">
       <DependentUpon>ChatView.xaml</DependentUpon>
@@ -155,7 +158,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Commands\" />
-    <Folder Include="Services\" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Imgs\blank.png" />
