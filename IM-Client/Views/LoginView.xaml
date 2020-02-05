@@ -8,9 +8,7 @@
              SnapsToDevicePixels="True"
              mc:Ignorable="d"
              d:DesignHeight="400" d:DesignWidth="600">
-    <UserControl.Resources>
 
-    </UserControl.Resources>
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
         <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" 
                              Width="240" Height="380">
