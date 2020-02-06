@@ -90,6 +90,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Commands\RelayCommand.cs" />
+    <Compile Include="Commands\RelayCommandAsync.cs" />
     <Compile Include="Data\SampleMainWindowViewModel.cs" />
     <Compile Include="Enums\UserModes.cs" />
     <Compile Include="Models\ChatMessage.cs" />
@@ -156,9 +158,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Commands\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Imgs\blank.png" />
   </ItemGroup>

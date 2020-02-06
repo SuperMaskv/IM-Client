@@ -8,6 +8,11 @@ namespace IM_Client.Services
 {
     public class ChatServices:IChatServices
     {
+        private event Action<string> _noServerLogin;
 
+        public ChatServices()
+        {
+
+        }
     }
 }

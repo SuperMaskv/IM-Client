@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using IM_Client.Commands;
 using IM_Client.Services;
+using System;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace IM_Client.ViewModels
 {
-    public class MainWindowViewModel:ViewModelBase
+    public class MainWindowViewModel : ViewModelBase
     {
         private IChatServices chatSvc;
 
@@ -20,9 +19,33 @@ namespace IM_Client.ViewModels
         public string ProfilePic
         {
             get { return _profilePic; }
-            set { _profilePic = value;
-                OnPropertyChanged();    
+            set
+            {
+                _profilePic = value;
+                OnPropertyChanged();
             }
         }
+
+        #region NoServerLoginCommand
+        private ICommand _noServerLoginCommand;
+        public ICommand NoServerLoginCommand
+        {
+            get
+            {
+                return _noServerLoginCommand ?? (_noServerLoginCommand =
+                    new RelayCommandAsync(() => NoServerLogin(), (o) => CanNoServerLogin()));
+            }
+        }
+
+        private bool CanNoServerLogin()
+        {
+            throw new NotImplementedException();
+        }
+
+        private async Task<bool> NoServerLogin()
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
     }
 }
