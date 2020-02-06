@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace IM_Client.Protocol
 {
-    class Packet
+    public abstract class Packet
     {
+        public readonly byte VERSION = 1;
+        //无服务器登录报文
+        public static readonly byte NO_SERVER_LOGIN = 0x01;
+
+        public abstract byte getPacketType();
     }
 }

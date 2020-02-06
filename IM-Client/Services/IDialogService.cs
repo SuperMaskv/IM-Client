@@ -6,13 +6,7 @@ using System.Threading.Tasks;
 
 namespace IM_Client.Services
 {
-    public class ChatServices:IChatServices
+    interface IDialogService
     {
-        private event Action<string> _noServerLogin;
-
-        public ChatServices()
-        {
-
-        }
     }
 }

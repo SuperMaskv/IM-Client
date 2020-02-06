@@ -97,6 +97,10 @@
     <Compile Include="Models\ChatMessage.cs" />
     <Compile Include="Models\Participant.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Protocol\Handler\NoServerPacketHandler.cs" />
+    <Compile Include="Protocol\NoServerPacket\NoServerLoginPacket.cs" />
+    <Compile Include="Protocol\Packet.cs" />
+    <Compile Include="Protocol\PacketCodec.cs" />
     <Compile Include="Services\ChatServices.cs" />
     <Compile Include="Services\IChatServices.cs" />
     <Compile Include="Utils\BringNewItemIntoViewBehavior.cs" />
