@@ -5,18 +5,23 @@ using System.Text;
 using System.Threading.Tasks;
 using IM_Client.Protocol.NoServerPacket;
 
-namespace IM_Client.Protocol.NoServerHandler
+namespace IM_Client.Protocol.Handler
 {
     public class NoServerPacketHandler
     {
-        private static event Action<Packet> NoServerPacketHandlers;
+        public event Action<Packet> NoServerPacketHandlers;
         public static NoServerPacketHandler INSTANCE = new NoServerPacketHandler();
+
+        public void INVOKE(Packet packet)
+        {
+            NoServerPacketHandlers?.Invoke(packet);
+        }
 
         private NoServerPacketHandler()
         {
             NoServerPacketHandlers += NoServerLoginPacketHanler;
         }
-        public void NoServerLoginPacketHanler(Packet packet)
+        private void NoServerLoginPacketHanler(Packet packet)
         {
             if (!(packet is NoServerLoginPacket)) return;
 

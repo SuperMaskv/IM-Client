@@ -11,12 +11,13 @@ namespace IM_Client.Utils
         public ViewModelLocator()
         {
             container = new UnityContainer();
-            container.RegisterType<IChatServices, ChatServices>();
+            container.RegisterType<IChatService, ChatService>();
+            container.RegisterType<IDialogService, DialogService>();
         }
 
-        public MainWindowViewModel MainWindowVM()
+        public MainWindowViewModel MainWindowVM
         {
-            return container.Resolve<MainWindowViewModel>();
+            get { return container.Resolve<MainWindowViewModel>(); }
         }
     }
 }

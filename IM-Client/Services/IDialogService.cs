@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace IM_Client.Services
 {
-    interface IDialogService
+    public interface IDialogService
     {
+        void ShowNotification(string message, string caption = "");
+        bool ShowConfirmationRequest(string message, string caption = "");
+        string OpenFile(string caption, string filter = @"All files (*.*)|*.*");
     }
 }

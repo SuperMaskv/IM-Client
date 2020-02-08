@@ -54,8 +54,8 @@
             <Style x:Key="ChatContentStyle" TargetType="ContentControl">
                 <Setter Property="ContentTemplate" Value="{StaticResource LoginTemplate}" />
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding UserModes}" Value="{x:Static enums:UserModes.Chat}">
-                        <Setter Property="ContentTemplate" Value="{Binding ChatTemplate}"/>
+                    <DataTrigger Binding="{Binding UserMode}" Value="{x:Static enums:UserModes.Chat}">
+                        <Setter Property="ContentTemplate" Value="{StaticResource ChatTemplate}"/>
                     </DataTrigger>
                 </Style.Triggers>
             </Style>

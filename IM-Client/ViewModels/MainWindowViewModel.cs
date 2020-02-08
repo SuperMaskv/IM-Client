@@ -2,17 +2,32 @@
 using IM_Client.Services;
 using System;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
+using IM_Client.Enums;
 
 namespace IM_Client.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        private IChatServices chatSvc;
+        private IChatService chatService;
+        private IDialogService dialogService;
 
-        public MainWindowViewModel(ChatServices chatSvc)
+        public MainWindowViewModel(ChatService chatSvc,DialogService dialogSvc)
         {
-            this.chatSvc = chatSvc;
+            this.chatService = chatSvc;
+            this.dialogService = dialogSvc;
+        }
+
+        private string _userName;
+        public string UserName
+        {
+            get { return _userName; }
+            set
+            {
+                _userName = value;
+                OnPropertyChanged();
+            }
         }
 
         private string _profilePic;
@@ -22,6 +37,17 @@ namespace IM_Client.ViewModels
             set
             {
                 _profilePic = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private UserModes _userMode;
+        public UserModes UserMode
+        {
+            get { return _userMode; }
+            set
+            {
+                _userMode = value;
                 OnPropertyChanged();
             }
         }
@@ -39,12 +65,39 @@ namespace IM_Client.ViewModels
 
         private bool CanNoServerLogin()
         {
-            throw new NotImplementedException();
+            return !string.IsNullOrEmpty(UserName) && UserName.Length >= 2;
         }
 
         private async Task<bool> NoServerLogin()
         {
-            throw new NotImplementedException();
+            UserMode = UserModes.Chat;
+
+            new Task(() => chatService.UdpListen());
+
+            return true;
+        }
+
+        #endregion
+
+        #region LoginCommand
+        private ICommand _loginCommand;
+        public ICommand LoginCommand
+        {
+            get
+            {
+                return _loginCommand ?? (_loginCommand =
+                    new RelayCommand((o) => Login(), (o) => CanLogin()));
+            }
+        }
+
+        private bool CanLogin()
+        {
+            return true;
+        }
+
+        private void Login()
+        {
+            dialogService.ShowNotification("Login");
         }
         #endregion
     }
