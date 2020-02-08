@@ -7,43 +7,59 @@ using System.Net;
 using System.Net.Sockets;
 using IM_Client.Protocol;
 using IM_Client.Protocol.Handler;
+using System.Threading;
 
 namespace IM_Client.Services
 {
-    public class ChatService:IChatService
+    public class ChatService : IChatService
     {
-        public event Action<Packet> _broadcastPacket;
-        public event Action<Packet,IPEndPoint> _unicastPacket;
+        public event Action<Packet> BroadcastPacket;
+        public event Action<Packet, IPEndPoint> UnicastPacket;
+        public event Action UdpListener;
 
         public ChatService()
         {
-            _broadcastPacket += SendBroadcast;
-            _unicastPacket += SendUnicast;
+            BroadcastPacket += SendBroadcast;
+            UnicastPacket += SendUnicast;
+            UdpListener += UdpListen;
         }
 
-        public void SendBroadcast(Packet packet)
+
+        public void InvokeBroadcastPacketEvent(Packet packet)
+        {
+            BroadcastPacket?.Invoke(packet);
+        }
+
+        public void InvokeUnicastPacketEvent(Packet packet, IPEndPoint iPEndPoint)
+        {
+            UnicastPacket?.Invoke(packet, iPEndPoint);
+        }
+
+        private void SendBroadcast(Packet packet)
         {
             UdpClient sendUdpClient = new UdpClient();
             byte[] bytes = PacketCodec.INSTANCE.Encode(packet);
             sendUdpClient.Send(bytes, bytes.Length, new IPEndPoint(IPAddress.Broadcast, 20000));
         }
 
-        public void SendUnicast(Packet packet,IPEndPoint iPEndPoint)
+        private void SendUnicast(Packet packet, IPEndPoint iPEndPoint)
         {
             UdpClient sendUdpClient = new UdpClient();
             byte[] bytes = PacketCodec.INSTANCE.Encode(packet);
             sendUdpClient.Send(bytes, bytes.Length, iPEndPoint);
         }
 
-        public async Task UdpListen()
+        public void UdpListen()
         {
+            Console.WriteLine("Listener is on.");
+            Console.WriteLine(Thread.CurrentThread.Name);
             UdpClient rcvClient = new UdpClient(20000);
-            while (true)
-            {
-                var rcvResult =await rcvClient.ReceiveAsync();
 
-                NoServerPacketHandler.INSTANCE.INVOKE(PacketCodec.INSTANCE.Decode(rcvResult.Buffer));
-            }
+
+            var rcvResult = rcvClient.ReceiveAsync();
+
+            NoServerPacketHandler.INSTANCE.INVOKE(PacketCodec.INSTANCE.Decode(rcvResult.Result.Buffer));
+
         }
     }
 }

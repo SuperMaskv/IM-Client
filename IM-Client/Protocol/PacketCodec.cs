@@ -17,7 +17,7 @@ namespace IM_Client.Protocol
         private PacketCodec()
         {
             packetMap = new Dictionary<byte, dynamic>();
-            packetMap.Add(Packet.NO_SERVER_LOGIN, new NoServerPacket.NoServerLoginPacket());
+            packetMap.Add(PacketType.NO_SERVER_LOGIN, new NoServerPacket.NoServerLoginPacket());
         }
 
         public byte[] Encode(Packet packet)
@@ -25,12 +25,16 @@ namespace IM_Client.Protocol
             string packetJson = JsonConvert.SerializeObject(packet);
             byte[] packetbytes = Encoding.UTF8.GetBytes(packetJson);
 
-            byte[] bytes = new byte[packetbytes.Length + 16];
-            BitConverter.GetBytes(MAGIC).CopyTo(bytes, 0);
-            bytes[2] = packet.VERSION;
+            byte[] bytes = new byte[packetbytes.Length + 8];
+            byte[] magicBytes=BitConverter.GetBytes(MAGIC);
+            Array.Copy(magicBytes, 0, bytes, 0, magicBytes.Length);
+
+            bytes[2] = packet.getVersion();
             bytes[3] = packet.getPacketType();
-            BitConverter.GetBytes(packetbytes.Length).CopyTo(bytes, 4);
-            packetbytes.CopyTo(bytes, 8);
+            byte[] lengthBytes=BitConverter.GetBytes(packetbytes.Length);
+            Array.Copy(lengthBytes, 0, bytes, 4, lengthBytes.Length);
+
+            Array.Copy(packetbytes, 0, bytes, 8, packetbytes.Length);
 
             return bytes;
         }
@@ -38,21 +42,17 @@ namespace IM_Client.Protocol
         public Packet Decode(byte[] bytes)
         {
             byte[] type = bytes.Skip(3).Take(1).ToArray();
-            var packetTypeDef = GetPacketType(type[0]);
 
             byte[] lengthBytes = bytes.Skip(4).Take(4).ToArray();
             var length = BitConverter.ToUInt32(lengthBytes,0);
             
             byte[] msgBytes = new byte[length];
-            bytes.CopyTo(msgBytes, 8);
+            Array.Copy(bytes, 8, msgBytes, 0, length);
             string packetJson = Encoding.UTF8.GetString(msgBytes);
 
-            return JsonConvert.DeserializeAnonymousType(packetJson, packetTypeDef);
+            return JsonConvert.DeserializeAnonymousType(packetJson, packetMap[type[0]]);
         }
 
-        public Packet GetPacketType(byte type)
-        {
-            return packetMap[type];
-        }
+
     }
 }

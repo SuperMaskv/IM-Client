@@ -1,6 +1,7 @@
 ﻿using Unity;
 using IM_Client.Services;
 using IM_Client.ViewModels;
+using System;
 
 namespace IM_Client.Utils
 {
@@ -10,14 +11,19 @@ namespace IM_Client.Utils
 
         public ViewModelLocator()
         {
+            Console.WriteLine("ViewModelLocator is initialed.");
             container = new UnityContainer();
             container.RegisterType<IChatService, ChatService>();
             container.RegisterType<IDialogService, DialogService>();
         }
 
+        private MainWindowViewModel mainWindowViewModel;
         public MainWindowViewModel MainWindowVM
         {
-            get { return container.Resolve<MainWindowViewModel>(); }
+            get
+            {
+                return mainWindowViewModel != null ? mainWindowViewModel : mainWindowViewModel = container.Resolve<MainWindowViewModel>();
+            }
         }
     }
 }

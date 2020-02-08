@@ -5,6 +5,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using IM_Client.Enums;
+using IM_Client.Protocol.NoServerPacket;
+using System.Collections.ObjectModel;
+using IM_Client.Models;
+using System.Threading;
+using System.Net.Sockets;
+using IM_Client.Protocol.Handler;
+using IM_Client.Protocol;
+using System.Net;
 
 namespace IM_Client.ViewModels
 {
@@ -13,8 +21,12 @@ namespace IM_Client.ViewModels
         private IChatService chatService;
         private IDialogService dialogService;
 
-        public MainWindowViewModel(ChatService chatSvc,DialogService dialogSvc)
+        private static readonly int LISTEN_PORT = 20000;
+
+
+        public MainWindowViewModel(IChatService chatSvc, IDialogService dialogSvc)
         {
+            Console.WriteLine("MainWindowVM is intialed.");
             this.chatService = chatSvc;
             this.dialogService = dialogSvc;
         }
@@ -52,6 +64,29 @@ namespace IM_Client.ViewModels
             }
         }
 
+        private ObservableCollection<Participant> _participants = new ObservableCollection<Participant>();
+        public ObservableCollection<Participant> Participants
+        {
+            get { return _participants; }
+            set
+            {
+                _participants = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private Participant _selectedParticipant;
+        public Participant SelectedParticipant
+        {
+            get { return _selectedParticipant; }
+            set
+            {
+                _selectedParticipant = value;
+                if (_selectedParticipant.HasSentNewMessage) _selectedParticipant.HasSentNewMessage = false;
+                OnPropertyChanged();
+            }
+        }
+
         #region NoServerLoginCommand
         private ICommand _noServerLoginCommand;
         public ICommand NoServerLoginCommand
@@ -70,11 +105,27 @@ namespace IM_Client.ViewModels
 
         private async Task<bool> NoServerLogin()
         {
-            UserMode = UserModes.Chat;
+            NoServerLoginPacket noServerLoginPacket = new NoServerLoginPacket();
+            noServerLoginPacket.UserName = UserName;
+            noServerLoginPacket.Port = LISTEN_PORT;
+            chatService.InvokeBroadcastPacketEvent(noServerLoginPacket);
 
-            new Task(() => chatService.UdpListen());
+            UserMode = UserModes.Chat;
+            ThreadPool.QueueUserWorkItem(new WaitCallback(UdpListen));
 
             return true;
+        }
+
+        private void UdpListen(object obj)
+        {
+            Console.WriteLine("Listener is on.");
+            Console.WriteLine(Thread.CurrentThread.Name);
+            UdpClient rcvClient = new UdpClient(20000);
+
+            IPEndPoint remote = new IPEndPoint(IPAddress.Any, 0);
+
+            var rcvResult = rcvClient.Receive(ref remote);
+            NoServerPacketHandler.INSTANCE.INVOKE(PacketCodec.INSTANCE.Decode(rcvResult));
         }
 
         #endregion

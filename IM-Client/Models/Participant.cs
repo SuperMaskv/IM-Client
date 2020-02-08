@@ -33,18 +33,6 @@ namespace IM_Client.Models
             }
         }
 
-        private bool _isTyping;
-
-        public bool IsTyping
-        {
-            get { return _isTyping; }
-            set
-            {
-                _isTyping = value;
-                OnPropertyChanged();
-            }
-        }
-
         public Participant()
         {
             ChatMessages = new ObservableCollection<ChatMessage>();

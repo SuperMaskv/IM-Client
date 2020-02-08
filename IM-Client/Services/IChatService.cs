@@ -11,9 +11,11 @@ namespace IM_Client.Services
 {
     public interface IChatService
     {
-        event Action<Packet> _broadcastPacket;
-        event Action<Packet, IPEndPoint> _unicastPacket;
+        event Action<Packet> BroadcastPacket;
+        event Action<Packet, IPEndPoint> UnicastPacket;
+        event Action UdpListener;
 
-        Task UdpListen();
+        void InvokeBroadcastPacketEvent(Packet packet);
+        void InvokeUnicastPacketEvent(Packet packet,IPEndPoint iPEndPoint);
     }
 }

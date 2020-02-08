@@ -100,11 +100,11 @@ namespace IM_Client.Data
                 IsOriginNative = true
             });
 
-            Participants.Add(new Participant { UserName = "Superman", ChatMessages = someChatter, IsTyping = true, IsLoggedIn = true });
+            Participants.Add(new Participant { UserName = "Superman", ChatMessages = someChatter, IsLoggedIn = true });
             Participants.Add(new Participant { UserName = "Wonder Woman", ChatMessages = someChatter, IsLoggedIn = false });
             Participants.Add(new Participant { UserName = "Aquaman", ChatMessages = someChatter, HasSentNewMessage = true });
             Participants.Add(new Participant { UserName = "Captain Canada", ChatMessages = someChatter, HasSentNewMessage = true });
-            Participants.Add(new Participant { UserName = "Iron Man", ChatMessages = someChatter, IsTyping = true });
+            Participants.Add(new Participant { UserName = "Iron Man", ChatMessages = someChatter});
 
             SelectedParticipant = Participants.First();
         }
