@@ -10,5 +10,7 @@ namespace IM_Client.Protocol
     {
         //无服务器登录报文
         public static readonly byte NO_SERVER_LOGIN = 0x01;
+        //无服务器注销报文
+        public static readonly byte NO_SERVER_LOGOUT = 0x02;
     }
 }

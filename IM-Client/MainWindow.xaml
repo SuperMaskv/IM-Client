@@ -22,7 +22,7 @@
             <i:InvokeCommandAction Command="" />
         </i:EventTrigger>
         <i:EventTrigger EventName="Closing">
-            <i:InvokeCommandAction Command="" />
+            <i:InvokeCommandAction Command="{Binding NoServerLogoutCommand}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Grid>

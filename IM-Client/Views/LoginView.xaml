@@ -33,7 +33,7 @@
                 <!--todo:Command Binding-->
                 <Button Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
                         HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0 0 56 16"
-                        Command="{Binding}"
+                        Command="{Binding SelectedProfilePicCommand}"
                         ToolTip="点击以选择头像图片">
                     <materialDesign:PackIcon Kind="FileImage" Height="20" Width="20"/>
                 </Button>

@@ -18,6 +18,7 @@ namespace IM_Client.Protocol
         {
             packetMap = new Dictionary<byte, dynamic>();
             packetMap.Add(PacketType.NO_SERVER_LOGIN, new NoServerPacket.NoServerLoginPacket());
+            packetMap.Add(PacketType.NO_SERVER_LOGOUT, new NoServerPacket.NoServerLogoutPacket());
         }
 
         public byte[] Encode(Packet packet)
@@ -26,12 +27,12 @@ namespace IM_Client.Protocol
             byte[] packetbytes = Encoding.UTF8.GetBytes(packetJson);
 
             byte[] bytes = new byte[packetbytes.Length + 8];
-            byte[] magicBytes=BitConverter.GetBytes(MAGIC);
+            byte[] magicBytes = BitConverter.GetBytes(MAGIC);
             Array.Copy(magicBytes, 0, bytes, 0, magicBytes.Length);
 
             bytes[2] = packet.getVersion();
             bytes[3] = packet.getPacketType();
-            byte[] lengthBytes=BitConverter.GetBytes(packetbytes.Length);
+            byte[] lengthBytes = BitConverter.GetBytes(packetbytes.Length);
             Array.Copy(lengthBytes, 0, bytes, 4, lengthBytes.Length);
 
             Array.Copy(packetbytes, 0, bytes, 8, packetbytes.Length);
@@ -44,9 +45,10 @@ namespace IM_Client.Protocol
             byte[] type = bytes.Skip(3).Take(1).ToArray();
 
             byte[] lengthBytes = bytes.Skip(4).Take(4).ToArray();
-            var length = BitConverter.ToUInt32(lengthBytes,0);
-            
+            var length = BitConverter.ToUInt32(lengthBytes, 0);
+
             byte[] msgBytes = new byte[length];
+            if (msgBytes.Length != bytes.Length - 8) return null;
             Array.Copy(bytes, 8, msgBytes, 0, length);
             string packetJson = Encoding.UTF8.GetString(msgBytes);
 

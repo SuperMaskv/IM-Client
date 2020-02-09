@@ -174,10 +174,6 @@
                                 <Style.Triggers>
                                     <MultiDataTrigger>
                                         <MultiDataTrigger.Conditions>
-                                            <Condition
-                                                Binding="{Binding DataContext.IsConnected,
-                                                RelativeSource={RelativeSource FindAncestor,AncestorType=UserControl}}"
-                                                Value="True" />
                                             <Condition Binding="{Binding IsLoggedIn}" Value="True" />
                                         </MultiDataTrigger.Conditions>
                                         <MultiDataTrigger.Setters>
