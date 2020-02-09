@@ -1,5 +1,6 @@
 ﻿using IM_Client.ViewModels;
 using System.Collections.ObjectModel;
+using System.Net;
 
 namespace IM_Client.Models
 {
@@ -10,6 +11,9 @@ namespace IM_Client.Models
         public ObservableCollection<ChatMessage> ChatMessages { get; set; }
 
         private bool _isLoggedIn = true;
+
+        public IPEndPoint Remote { get; set; }
+
 
         public bool IsLoggedIn
         {

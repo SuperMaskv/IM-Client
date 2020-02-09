@@ -26,7 +26,9 @@ namespace IM_Client.ViewModels
         private int MAX_IMAGE_WIDTH = 1024;
         private int MAX_IMAGE_HEIGHT = 1024;
 
+
         private static readonly int LISTEN_PORT = 20000;
+        public IPEndPoint REMOTE = new IPEndPoint(IPAddress.Any, 0);
 
 
         public MainWindowViewModel(IChatService chatSvc, IDialogService dialogSvc)
@@ -56,6 +58,17 @@ namespace IM_Client.ViewModels
             set
             {
                 _profilePic = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _textMessage;
+        public string TextMessage
+        {
+            get { return _textMessage; }
+            set
+            {
+                _textMessage = value;
                 OnPropertyChanged();
             }
         }
@@ -187,11 +200,9 @@ namespace IM_Client.ViewModels
             Console.WriteLine("Listener is on.");
             UdpClient rcvClient = new UdpClient(20000);
 
-            IPEndPoint remote = new IPEndPoint(IPAddress.Any, 0);
-
             while (true)
             {
-                var rcvResult = rcvClient.Receive(ref remote);
+                var rcvResult = rcvClient.Receive(ref REMOTE);
                 NoServerPacketHandler.INSTANCE.INVOKE(PacketCodec.INSTANCE.Decode(rcvResult));
             }
         }
@@ -215,6 +226,32 @@ namespace IM_Client.ViewModels
             logoutPacket.UserName = UserName;
 
             chatService.InvokeBroadcastPacketEvent(logoutPacket);
+        }
+        #endregion
+
+        #region NoServerTextMsgCommand
+        private ICommand _noServerTextMsgCommand;
+        public ICommand NoServerTextMsgCommand
+        {
+            get
+            {
+                return _noServerTextMsgCommand ?? (_noServerTextMsgCommand
+                  = new RelayCommand((o) => SendTextMsg(), (o) => CanSendTextMsg()));
+            }
+        }
+
+        private void SendTextMsg()
+        {
+            TextMessagePacket textMessagePacket = new TextMessagePacket();
+            textMessagePacket.TextMessage = TextMessage;
+            textMessagePacket.Author = UserName;
+
+            chatService.InvokeUnicastPacketEvent(textMessagePacket, SelectedParticipant.Remote);
+        }
+
+        private bool CanSendTextMsg()
+        {
+            return TextMessage.Length > 0;
         }
         #endregion
 

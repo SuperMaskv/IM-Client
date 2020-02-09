@@ -19,6 +19,7 @@ namespace IM_Client.Protocol
             packetMap = new Dictionary<byte, dynamic>();
             packetMap.Add(PacketType.NO_SERVER_LOGIN, new NoServerPacket.NoServerLoginPacket());
             packetMap.Add(PacketType.NO_SERVER_LOGOUT, new NoServerPacket.NoServerLogoutPacket());
+            packetMap.Add(PacketType.NO_SERVER_TEXT_MSG, new NoServerPacket.TextMessagePacket());
         }
 
         public byte[] Encode(Packet packet)
@@ -54,7 +55,5 @@ namespace IM_Client.Protocol
 
             return JsonConvert.DeserializeAnonymousType(packetJson, packetMap[type[0]]);
         }
-
-
     }
 }

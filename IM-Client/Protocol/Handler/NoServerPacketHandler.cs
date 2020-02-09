@@ -49,6 +49,7 @@ namespace IM_Client.Protocol.Handler
                 participant.UserName = noServerLoginPacket.UserName;
                 participant.Photo = noServerLoginPacket.Avator;
                 participant.IsLoggedIn = true;
+                participant.Remote = viewModelLocator.MainWindowVM.REMOTE;
 
                 App.Current.Dispatcher.Invoke((Action)delegate ()
                 {
