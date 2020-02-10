@@ -26,6 +26,7 @@ namespace IM_Client.Protocol.Handler
             viewModelLocator = (ViewModelLocator)Application.Current.Resources["VMLocator"];
             NoServerPacketHandlers += NoServerLoginPacketHanler;
             NoServerPacketHandlers += NoServerLogoutPacketHandler;
+            NoServerPacketHandlers += NoServerTextMsgPacketHandler;
         }
 
 
@@ -90,6 +91,27 @@ namespace IM_Client.Protocol.Handler
                                 .Where((p) => string.Equals(p.UserName, logoutPacket.UserName))
                                 .FirstOrDefault();
                 if (person != null) person.IsLoggedIn = false;
+            });
+        }
+
+        private void NoServerTextMsgPacketHandler(Packet packet)
+        {
+            if (!(packet is TextMessagePacket)) return;
+            Console.WriteLine("Receive Text Message");
+            TextMessagePacket textMessagePacket = (TextMessagePacket)packet;
+
+            ChatMessage chatMessage = new ChatMessage();
+            chatMessage.Author = textMessagePacket.Author;
+            chatMessage.Message = textMessagePacket.TextMessage;
+            chatMessage.Time = DateTime.Now;
+            chatMessage.IsOriginNative = false;
+
+            App.Current.Dispatcher.Invoke(delegate ()
+            {
+                var person = viewModelLocator.MainWindowVM.Participants
+                                .Where((p) => string.Equals(p.UserName, textMessagePacket.Author))
+                                .FirstOrDefault();
+                if (person != null) person.ChatMessages.Add(chatMessage);
             });
         }
     }

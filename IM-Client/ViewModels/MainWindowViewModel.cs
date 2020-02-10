@@ -27,8 +27,11 @@ namespace IM_Client.ViewModels
         private int MAX_IMAGE_HEIGHT = 1024;
 
 
+
         private static readonly int LISTEN_PORT = 20000;
         public IPEndPoint REMOTE = new IPEndPoint(IPAddress.Any, 0);
+        public UdpClient RcvCient;
+        public IPEndPoint LOCAL;
 
 
         public MainWindowViewModel(IChatService chatSvc, IDialogService dialogSvc)
@@ -69,6 +72,20 @@ namespace IM_Client.ViewModels
             set
             {
                 _textMessage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _isNoServer;
+        public bool IsNoServer
+        {
+            get
+            {
+                return _isNoServer;
+            }
+            set
+            {
+                _isNoServer = value;
                 OnPropertyChanged();
             }
         }
@@ -177,9 +194,12 @@ namespace IM_Client.ViewModels
 
         private async Task<bool> NoServerLogin()
         {
+            RcvCient = new UdpClient(20000);
+            LOCAL = (IPEndPoint)RcvCient.Client.LocalEndPoint;
+
             NoServerLoginPacket noServerLoginPacket = new NoServerLoginPacket();
             noServerLoginPacket.UserName = UserName;
-            noServerLoginPacket.Port = LISTEN_PORT;
+            noServerLoginPacket.Port = LOCAL.Port;
 
             if (!string.IsNullOrEmpty(ProfilePic))
                 noServerLoginPacket.Avator = File.ReadAllBytes(ProfilePic);
@@ -187,22 +207,22 @@ namespace IM_Client.ViewModels
             noServerLoginPacket.IsReply = false;
             chatService.InvokeBroadcastPacketEvent(noServerLoginPacket);
 
+            IsNoServer = true;
             UserMode = UserModes.Chat;
+
             Thread Listener = new Thread(new ThreadStart(UdpListen));
             Listener.IsBackground = true;
             Listener.Start();
-
             return true;
         }
 
         private void UdpListen()
         {
             Console.WriteLine("Listener is on.");
-            UdpClient rcvClient = new UdpClient(20000);
 
             while (true)
             {
-                var rcvResult = rcvClient.Receive(ref REMOTE);
+                var rcvResult = RcvCient.Receive(ref REMOTE);
                 NoServerPacketHandler.INSTANCE.INVOKE(PacketCodec.INSTANCE.Decode(rcvResult));
             }
         }
@@ -247,11 +267,21 @@ namespace IM_Client.ViewModels
             textMessagePacket.Author = UserName;
 
             chatService.InvokeUnicastPacketEvent(textMessagePacket, SelectedParticipant.Remote);
+
+            ChatMessage chatMessage = new ChatMessage();
+            chatMessage.Author = UserName;
+            chatMessage.Message = TextMessage;
+            chatMessage.Time = DateTime.Now;
+            chatMessage.IsOriginNative = true;
+
+            SelectedParticipant.ChatMessages.Add(chatMessage);
+
+            TextMessage = string.Empty;
         }
 
         private bool CanSendTextMsg()
         {
-            return TextMessage.Length > 0;
+            return !string.IsNullOrEmpty(TextMessage) && TextMessage.Length > 2;
         }
         #endregion
 
