@@ -326,7 +326,11 @@
                         <TextBox x:Name="MessageTxtBox" BorderBrush="Transparent"
                                  TextWrapping="Wrap" AcceptsReturn="True" CaretBrush="Gray"
                                  VerticalScrollBarVisibility="Auto"
-                                 Text="{Binding TextMessage,UpdateSourceTrigger=PropertyChanged}" />
+                                 Text="{Binding TextMessage,UpdateSourceTrigger=PropertyChanged}" >
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Return" Command="{Binding NoServerTextMsgCommand}"/>
+                            </TextBox.InputBindings>
+                        </TextBox>
                         <!--Image-->
                         <!--todo:Command Binding-->
                         <Button Grid.Column="1" Foreground="#FF6E6E6E"

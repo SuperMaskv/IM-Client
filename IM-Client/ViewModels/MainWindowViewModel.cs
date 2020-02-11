@@ -90,6 +90,27 @@ namespace IM_Client.ViewModels
             }
         }
 
+        private bool _hasServer;
+        public bool HasServer
+        {
+            get { return _hasServer; }
+            set
+            {
+                _hasServer = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ICommand _loginButtonCommand;
+        public ICommand LoginButtonCommand
+        {
+            get
+            {
+                if (HasServer) return LoginCommand;
+                else return NoServerLoginCommand;
+            }
+        }
+
         private UserModes _userMode;
         public UserModes UserMode
         {
