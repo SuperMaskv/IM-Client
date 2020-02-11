@@ -14,5 +14,7 @@ namespace IM_Client.Protocol
         public static readonly byte NO_SERVER_LOGOUT = 0x02;
         //无服务器文字消息
         public static readonly byte NO_SERVER_TEXT_MSG = 0x03;
+        //无服务器图片消息
+        public static readonly byte NO_SERVER_PIC_MSG = 0x04;
     }
 }

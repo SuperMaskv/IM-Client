@@ -335,7 +335,7 @@
                         <!--todo:Command Binding-->
                         <Button Grid.Column="1" Foreground="#FF6E6E6E"
                                 Margin="4" Style="{DynamicResource ImageButtonStyle}"
-                                Command="{Binding}" />
+                                Command="{Binding NoServerPicMsgCommand}" />
                     </Grid>
                 </Border>
                 <!--SendButton-->

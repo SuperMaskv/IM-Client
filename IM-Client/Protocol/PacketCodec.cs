@@ -20,6 +20,7 @@ namespace IM_Client.Protocol
             packetMap.Add(PacketType.NO_SERVER_LOGIN, new NoServerPacket.NoServerLoginPacket());
             packetMap.Add(PacketType.NO_SERVER_LOGOUT, new NoServerPacket.NoServerLogoutPacket());
             packetMap.Add(PacketType.NO_SERVER_TEXT_MSG, new NoServerPacket.TextMessagePacket());
+            packetMap.Add(PacketType.NO_SERVER_PIC_MSG, new NoServerPacket.NoServerPicMsgPacket());
         }
 
         public byte[] Encode(Packet packet)

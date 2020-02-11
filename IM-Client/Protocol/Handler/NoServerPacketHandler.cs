@@ -28,6 +28,7 @@ namespace IM_Client.Protocol.Handler
             NoServerPacketHandlers += NoServerLoginPacketHanler;
             NoServerPacketHandlers += NoServerLogoutPacketHandler;
             NoServerPacketHandlers += NoServerTextMsgPacketHandler;
+            NoServerPacketHandlers += NoServerPicMsgPacketHandler;
         }
 
 
@@ -56,6 +57,10 @@ namespace IM_Client.Protocol.Handler
                 App.Current.Dispatcher.Invoke((Action)delegate ()
                 {
                     viewModelLocator.MainWindowVM.Participants.Add(participant);
+                    if (viewModelLocator.MainWindowVM.Participants.Count()==1)
+                    {
+                        viewModelLocator.MainWindowVM.SelectedParticipant = participant;
+                    }
                 });
             }
             else
@@ -120,6 +125,37 @@ namespace IM_Client.Protocol.Handler
                         person.HasSentNewMessage = true;
                     }
 
+                }
+            });
+        }
+
+        private void NoServerPicMsgPacketHandler(Packet packet)
+        {
+            if (!(packet is NoServerPicMsgPacket)) return;
+            Console.WriteLine("Receive NoServerPicMsgPacket");
+
+            NoServerPicMsgPacket picMsgPacket = (NoServerPicMsgPacket)packet;
+
+            ChatMessage chatMessage = new ChatMessage()
+            {
+                Author = picMsgPacket.Author,
+                Picture = picMsgPacket.Pic,
+                Time = DateTime.Now,
+                IsOriginNative = false
+            };
+
+            App.Current.Dispatcher.Invoke(delegate ()
+            {
+                var person = viewModelLocator.MainWindowVM.Participants
+                                .Where((p) => string.Equals(picMsgPacket.Author, p.UserName))
+                                .FirstOrDefault();
+                if (person != null)
+                {
+                    person.ChatMessages.Add(chatMessage);
+                    if (person.UserName != viewModelLocator.MainWindowVM.SelectedParticipant.UserName)
+                    {
+                        person.HasSentNewMessage = true;
+                    }
                 }
             });
         }

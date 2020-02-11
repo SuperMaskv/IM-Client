@@ -190,8 +190,8 @@ namespace IM_Client.ViewModels
             {
                 Image image = Image.FromStream(img);
                 var imgName = DateTime.Now.ToFileTimeUtc();
-                image.Save(imgName.ToString(), ImageFormat.Jpeg);
-                Process.Start(imgName.ToString());
+                image.Save(imgName.ToString()+".jpg", ImageFormat.Jpeg);
+                Process.Start(imgName.ToString()+".jpg");
             }
 
         }
@@ -306,6 +306,55 @@ namespace IM_Client.ViewModels
                         && TextMessage.Length > 2
                         && SelectedParticipant != null
                         && SelectedParticipant.IsLoggedIn == true;
+        }
+        #endregion
+
+        #region Send Picture Message Without Server
+        private ICommand _noServerPicMsgCommand;
+        public ICommand NoServerPicMsgCommand
+        {
+            get
+            {
+                return _noServerPicMsgCommand ?? (_noServerPicMsgCommand
+                    = new RelayCommandAsync(() => SendNoServerPicMsg(), (o) => CanSendNoServerPicMsg()));
+            }
+        }
+
+        private bool CanSendNoServerPicMsg()
+        {
+            return SelectedParticipant != null
+                        && SelectedParticipant.IsLoggedIn == true;
+        }
+
+        private async Task<bool> SendNoServerPicMsg()
+        {
+            var pic = dialogService.OpenFile("选择图片", "Images (*.jpg;*.png)|*.jpg;*.png");
+            if (string.IsNullOrEmpty(pic)) return false;
+
+            var img = await Task.Run(() => File.ReadAllBytes(pic));
+
+            try
+            {
+                NoServerPicMsgPacket picMsgPacket = new NoServerPicMsgPacket();
+                picMsgPacket.Pic = img;
+                picMsgPacket.Author = UserName;
+
+                chatService.InvokeUnicastPacketEvent(picMsgPacket, SelectedParticipant.Remote);
+
+                return true;
+            }
+            catch (Exception) { return false; }
+            finally
+            {
+                ChatMessage chatMessage = new ChatMessage()
+                {
+                    Author = UserName,
+                    Picture = img,
+                    Time = DateTime.Now,
+                    IsOriginNative = true
+                };
+                SelectedParticipant.ChatMessages.Add(chatMessage);
+            }
         }
         #endregion
 
