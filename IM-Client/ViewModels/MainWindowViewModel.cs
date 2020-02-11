@@ -281,7 +281,10 @@ namespace IM_Client.ViewModels
 
         private bool CanSendTextMsg()
         {
-            return !string.IsNullOrEmpty(TextMessage) && TextMessage.Length > 2;
+            return !string.IsNullOrEmpty(TextMessage)
+                        && TextMessage.Length > 2
+                        && SelectedParticipant != null
+                        && SelectedParticipant.IsLoggedIn == true;
         }
         #endregion
 

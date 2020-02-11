@@ -6,6 +6,7 @@ using System.Windows;
 using System.IO;
 using IM_Client.Services;
 using System.Linq;
+using System.Net;
 
 namespace IM_Client.Protocol.Handler
 {
@@ -50,7 +51,7 @@ namespace IM_Client.Protocol.Handler
                 participant.UserName = noServerLoginPacket.UserName;
                 participant.Photo = noServerLoginPacket.Avator;
                 participant.IsLoggedIn = true;
-                participant.Remote = viewModelLocator.MainWindowVM.REMOTE;
+                participant.Remote = new IPEndPoint(viewModelLocator.MainWindowVM.REMOTE.Address, 20000);
 
                 App.Current.Dispatcher.Invoke((Action)delegate ()
                 {
@@ -111,7 +112,15 @@ namespace IM_Client.Protocol.Handler
                 var person = viewModelLocator.MainWindowVM.Participants
                                 .Where((p) => string.Equals(p.UserName, textMessagePacket.Author))
                                 .FirstOrDefault();
-                if (person != null) person.ChatMessages.Add(chatMessage);
+                if (person != null)
+                {
+                    person.ChatMessages.Add(chatMessage);
+                    if (person.UserName != viewModelLocator.MainWindowVM.SelectedParticipant.UserName)
+                    {
+                        person.HasSentNewMessage = true;
+                    }
+
+                }
             });
         }
     }
