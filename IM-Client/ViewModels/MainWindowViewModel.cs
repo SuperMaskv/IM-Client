@@ -185,14 +185,9 @@ namespace IM_Client.ViewModels
         }
         private void OpenImage(ChatMessage chatMessage)
         {
-            var img = new MemoryStream(chatMessage.Picture);
-            if (img != null)
-            {
-                Image image = Image.FromStream(img);
-                var imgName = DateTime.Now.ToFileTimeUtc();
-                image.Save(imgName.ToString()+".jpg", ImageFormat.Jpeg);
-                Process.Start(imgName.ToString()+".jpg");
-            }
+            var img = chatMessage.Picture;
+            if (string.IsNullOrEmpty(img) || !File.Exists(img)) return;
+            Process.Start(img);
 
         }
         #endregion
@@ -333,6 +328,12 @@ namespace IM_Client.ViewModels
 
             var img = await Task.Run(() => File.ReadAllBytes(pic));
 
+            if (img.Length > 61440)
+            {
+                dialogService.ShowNotification("图片过大，请选择小于等于60KB的图片");
+                return false;
+            }
+
             try
             {
                 NoServerPicMsgPacket picMsgPacket = new NoServerPicMsgPacket();
@@ -349,7 +350,7 @@ namespace IM_Client.ViewModels
                 ChatMessage chatMessage = new ChatMessage()
                 {
                     Author = UserName,
-                    Picture = img,
+                    Picture = pic,
                     Time = DateTime.Now,
                     IsOriginNative = true
                 };

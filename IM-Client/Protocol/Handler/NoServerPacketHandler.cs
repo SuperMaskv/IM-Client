@@ -7,6 +7,8 @@ using System.IO;
 using IM_Client.Services;
 using System.Linq;
 using System.Net;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace IM_Client.Protocol.Handler
 {
@@ -57,7 +59,7 @@ namespace IM_Client.Protocol.Handler
                 App.Current.Dispatcher.Invoke((Action)delegate ()
                 {
                     viewModelLocator.MainWindowVM.Participants.Add(participant);
-                    if (viewModelLocator.MainWindowVM.Participants.Count()==1)
+                    if (viewModelLocator.MainWindowVM.Participants.Count() == 1)
                     {
                         viewModelLocator.MainWindowVM.SelectedParticipant = participant;
                     }
@@ -136,10 +138,19 @@ namespace IM_Client.Protocol.Handler
 
             NoServerPicMsgPacket picMsgPacket = (NoServerPicMsgPacket)packet;
 
+            var img = new MemoryStream(picMsgPacket.Pic);
+            string picName = "";
+            if (img != null)
+            {
+                Image pic = Image.FromStream(img);
+                picName = DateTime.Now.ToFileTimeUtc().ToString();
+                pic.Save(picName + ".jpg", ImageFormat.Jpeg);
+            }
+
             ChatMessage chatMessage = new ChatMessage()
             {
                 Author = picMsgPacket.Author,
-                Picture = picMsgPacket.Pic,
+                Picture = Path.GetFullPath(picName + ".jpg"),
                 Time = DateTime.Now,
                 IsOriginNative = false
             };

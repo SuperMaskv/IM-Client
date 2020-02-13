@@ -88,6 +88,36 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="SendFileButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource ImageButtonStyle}">
+            <Setter Property="Command" Value="{Binding}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid Background="Transparent">
+                            <materialDesign:PackIcon Name="SendIcon" Kind="FileMove"
+                                                     Foreground="{TemplateBinding Foreground}"
+                                                     VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                     HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                     Margin="{TemplateBinding Padding}"
+                                                     Width="Auto" Height="Auto" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="SendIcon" Property="Foreground"
+                                        Value="{DynamicResource PrimaryHueMidBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="SendIcon" Property="Foreground"
+                                        Value="{DynamicResource PrimaryHueMidBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.23" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <Style TargetType="ListBoxItem" x:Key="ParticipantsListBoxItemStyle">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="HorizontalContentAlignment"
@@ -321,6 +351,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
                             <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="30" />
                         </Grid.ColumnDefinitions>
                         <!--Text-->
                         <TextBox x:Name="MessageTxtBox" BorderBrush="Transparent"
@@ -332,16 +363,20 @@
                             </TextBox.InputBindings>
                         </TextBox>
                         <!--Image-->
-                        <!--todo:Command Binding-->
                         <Button Grid.Column="1" Foreground="#FF6E6E6E"
-                                Margin="4" Style="{DynamicResource ImageButtonStyle}"
+                                Margin="4 4 2 4" Style="{DynamicResource ImageButtonStyle}"
                                 Command="{Binding NoServerPicMsgCommand}" />
+                        <!--SendFileButton-->
+                        <Button Grid.Column="2" Foreground="#FF6E6E6E"
+                                Margin="2 4 4 4" Style="{DynamicResource SendFileButtonStyle}"/>
                     </Grid>
                 </Border>
+
                 <!--SendButton-->
-                <!--todo:Command Binding-->
                 <Button x:Name="SendButton" Grid.Column="1" Margin="10"
                         Style="{DynamicResource SendButtonStyle}"/>
+
+
             </Grid>
         </Border>
     </Grid>
