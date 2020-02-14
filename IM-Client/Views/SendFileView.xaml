@@ -17,7 +17,8 @@
         </Grid.RowDefinitions>
         <Label x:Name="StatusLabel" Content="Status" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontSize="14" />
         <ProgressBar x:Name="ProgressBar" Grid.Row="1" Height="25" />
-        <Button x:Name="SendFileButton" Grid.Row="2" Content="发送文件" Width="247.2" />
+        <Button x:Name="SendFileButton" Grid.Row="2" Content="发送文件" Width="247.2" 
+                Command="{Binding NoServerSendFileCommand}"/>
         <CheckBox x:Name="ChecksumCheckBox" Grid.Row="3" Content="Checksum" HorizontalAlignment="Center" VerticalAlignment="Top" />
     </Grid>
 </UserControl>

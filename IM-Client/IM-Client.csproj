@@ -118,7 +118,7 @@
     <Compile Include="Utils\ByteBitmapSourceConverter.cs" />
     <Compile Include="Utils\ViewModelLocator.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
-    <Compile Include="ViewModels\SendFileWindowViewModel.cs" />
+    <Compile Include="ViewModels\FileTransferWindowViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\ChatView.xaml.cs">
       <DependentUpon>ChatView.xaml</DependentUpon>
@@ -132,8 +132,8 @@
     <Compile Include="Views\SendFileView.xaml.cs">
       <DependentUpon>SendFileView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SendFileWindow.xaml.cs">
-      <DependentUpon>SendFileWindow.xaml</DependentUpon>
+    <Compile Include="FileTransferWindow.xaml.cs">
+      <DependentUpon>FileTransferWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -163,7 +163,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SendFileWindow.xaml">
+    <Page Include="FileTransferWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

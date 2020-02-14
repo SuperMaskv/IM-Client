@@ -15,6 +15,8 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using IM_Client.Utils;
+using System.Windows;
 
 namespace IM_Client.ViewModels
 {
@@ -25,7 +27,6 @@ namespace IM_Client.ViewModels
         private int MAX_IMAGE_WIDTH = 1024;
         private int MAX_IMAGE_HEIGHT = 1024;
 
-        private static readonly int LISTEN_PORT = 20000;
         public IPEndPoint REMOTE = new IPEndPoint(IPAddress.Any, 0);
         public UdpClient RcvCient;
         public IPEndPoint LOCAL;
@@ -382,26 +383,30 @@ namespace IM_Client.ViewModels
 
         #endregion Send Picture Message Without Server
 
-        #region Send File Command Without Server
+        #region Open File Transfer Window
 
-        private ICommand _noServerSendFileCommand;
+        private ICommand _openFileTransferWindow;
 
-        public ICommand NoServerSendFileCommand
+        public ICommand OpenFileTransferWindow
         {
             get
             {
-                return _noServerSendFileCommand ?? (_noServerSendFileCommand
-                    = new RelayCommand((o) => NoServerSendFile(), (o) => CanNoServerSendFile()));
+                return _openFileTransferWindow ?? (_openFileTransferWindow
+                    = new RelayCommand((o) => OpenWindow(), (o) => CanOpenFileTransferWindow()));
             }
         }
 
-        public bool CanNoServerSendFile()
+        public bool CanOpenFileTransferWindow()
         {
             return SelectedParticipant != null;
         }
 
-        public void NoServerSendFile()
+        public void OpenWindow()
         {
+            FileTransferWindow window = new FileTransferWindow();
+            var locator = (ViewModelLocator)Application.Current.Resources["VMLocator"];
+            locator.FileTransferWindowViewModel.SendFileMode = SendFileMode.Send;
+            window.Show();
         }
 
         #endregion Send File Command Without Server

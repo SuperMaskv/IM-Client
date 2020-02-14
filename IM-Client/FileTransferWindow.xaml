@@ -1,0 +1,14 @@
+﻿<metro:MetroWindow x:Class="IM_Client.FileTransferWindow"
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                   mc:Ignorable="d"
+        DataContext="{Binding Source={StaticResource VMLocator},Path=FileTransferWindowViewModel}"
+        Title="File Transfer" Height="247.2" Width="400" ResizeMode="NoResize">
+    <Grid>
+        <ContentControl Content="{Binding}" Style="{StaticResource FileTransferStyle}" />
+    </Grid>
+</metro:MetroWindow>

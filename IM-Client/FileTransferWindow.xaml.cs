@@ -1,13 +1,11 @@
-﻿using System.Windows;
-
-namespace IM_Client.Views
+﻿namespace IM_Client
 {
     /// <summary>
     /// SendFileWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class SendFileWindow
+    public partial class FileTransferWindow
     {
-        public SendFileWindow()
+        public FileTransferWindow()
         {
             InitializeComponent();
         }

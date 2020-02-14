@@ -23,19 +23,19 @@ namespace IM_Client.Utils
         {
             get
             {
-                return mainWindowViewModel != null ? mainWindowViewModel : mainWindowViewModel = container.Resolve<MainWindowViewModel>();
+                return mainWindowViewModel ?? (mainWindowViewModel
+                    = container.Resolve<MainWindowViewModel>());
             }
         }
 
-        private SendFileWindowViewModel _sendFileWindowViewModel;
+        private FileTransferWindowViewModel _fileTransferWindowViewModel;
 
-        public SendFileWindowViewModel SendFileWindowViewModel
+        public FileTransferWindowViewModel FileTransferWindowViewModel
         {
             get
             {
-                return _sendFileWindowViewModel != null
-                    ? _sendFileWindowViewModel
-                    : _sendFileWindowViewModel = container.Resolve<SendFileWindowViewModel>();
+                return _fileTransferWindowViewModel ?? (_fileTransferWindowViewModel
+                    = container.Resolve<FileTransferWindowViewModel>());
             }
         }
     }
