@@ -10,24 +10,24 @@
              d:DesignHeight="400" d:DesignWidth="600">
 
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-        <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" 
+        <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center"
                              Width="240" Height="380">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="160"/>
-                    <RowDefinition/>
+                    <RowDefinition Height="160" />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
-                <materialDesign:ColorZone 
+                <materialDesign:ColorZone
                     Mode="Light" Margin="0" VerticalAlignment="Stretch" Background="WhiteSmoke">
                     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Center"
                         Height="120" Width="120">
                         <Grid.OpacityMask>
-                            <VisualBrush Visual="{Binding ElementName=ClipEllipse}"/>
+                            <VisualBrush Visual="{Binding ElementName=ClipEllipse}" />
                         </Grid.OpacityMask>
-                        <Ellipse x:Name="ClipEllipse" Fill="White" Stroke="Black"/>
-                        <materialDesign:PackIcon Kind="AccountCircle" Width="144" Height="144" Margin="-12"/>
-                        <Image Source="{Binding ProfilePic,FallbackValue={StaticResource BlankImage},TargetNullValue={StaticResource BlankImage}}"/>
-                        <Ellipse Stroke="Black" StrokeThickness="1" UseLayoutRounding="True" Opacity="0.2"/>
+                        <Ellipse x:Name="ClipEllipse" Fill="White" Stroke="Black" />
+                        <materialDesign:PackIcon Kind="AccountCircle" Width="144" Height="144" Margin="-12" />
+                        <Image Source="{Binding ProfilePic,FallbackValue={StaticResource BlankImage},TargetNullValue={StaticResource BlankImage}}" />
+                        <Ellipse Stroke="Black" StrokeThickness="1" UseLayoutRounding="True" Opacity="0.2" />
                     </Grid>
                 </materialDesign:ColorZone>
                 <!--todo:Command Binding-->
@@ -35,7 +35,7 @@
                         HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0 0 56 16"
                         Command="{Binding SelectedProfilePicCommand}"
                         ToolTip="点击以选择头像图片">
-                    <materialDesign:PackIcon Kind="FileImage" Height="20" Width="20"/>
+                    <materialDesign:PackIcon Kind="FileImage" Height="20" Width="20" />
                 </Button>
                 <Border Grid.Row="1" BorderBrush="{DynamicResource MaterialDesignDivider}"
                         BorderThickness="0 1 0 0">
@@ -46,7 +46,7 @@
                                  Text="{Binding UserName,UpdateSourceTrigger=PropertyChanged}">
                             <TextBox.InputBindings>
                                 <!--todo:Command Binding-->
-                                <KeyBinding Command="{Binding LoginButtonCommand}" Key="Return"/>
+                                <KeyBinding Command="{Binding LoginButtonCommand}" Key="Return" />
                             </TextBox.InputBindings>
                         </TextBox>
                         <TextBox x:Name="UserpwdTxtBox" Width="200" Margin="0 10 0 0"
@@ -56,7 +56,7 @@
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding ElementName=AdvanceCheckbox,Path=IsChecked}"
                                                      Value="False">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Setter Property="Visibility" Value="Collapsed" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -65,17 +65,17 @@
                         <Button Content="登录" Margin="0 10 0 0" Command="{Binding LoginButtonCommand}">
                             <!--<Button.Resources>
                                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignRaisedButton}">
-                                    <Setter Property="Command" Value="{Binding NoServerLoginCommand}"/>
+                                    <Setter Property="Command" Value="{Binding NoServerLoginCommand}" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding ElementName=AdvanceCheckbox,Path=IsChecked}"
                                                      Value="True">
-                                            <Setter Property="Command" Value="{Binding LoginCommand}"/>
+                                            <Setter Property="Command" Value="{Binding LoginCommand}" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Button.Resources>-->
                         </Button>
-                        <CheckBox x:Name="AdvanceCheckbox" Content="高级选项" Margin="0 10 0 0" IsChecked="{Binding HasServer}"/>
+                        <CheckBox x:Name="AdvanceCheckbox" Content="高级选项" Margin="0 10 0 0" IsChecked="{Binding HasServer}" />
                     </StackPanel>
                 </Border>
             </Grid>
@@ -87,17 +87,16 @@
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding ElementName=AdvanceCheckbox,Path=IsChecked}"
                                      Value="False">
-                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Setter Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </materialDesign:Card.Resources>
             <StackPanel VerticalAlignment="Center">
-                <TextBox Width="200" materialDesign:HintAssist.Hint="服务器IP地址："/>
+                <TextBox Width="200" materialDesign:HintAssist.Hint="服务器IP地址：" />
                 <TextBox Width="200" materialDesign:HintAssist.Hint="服务器端口："
-                         Margin="0 10 0 0"/>
+                         Margin="0 10 0 0" />
             </StackPanel>
         </materialDesign:Card>
-
     </StackPanel>
 </UserControl>

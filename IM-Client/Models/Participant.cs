@@ -14,7 +14,6 @@ namespace IM_Client.Models
 
         public IPEndPoint Remote { get; set; }
 
-
         public bool IsLoggedIn
         {
             get { return _isLoggedIn; }

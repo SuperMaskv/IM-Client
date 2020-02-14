@@ -1,6 +1,4 @@
-﻿using System.Windows;
-
-namespace IM_Client
+﻿namespace IM_Client
 {
     /// <summary>
     /// MainWindow.xaml 的交互逻辑

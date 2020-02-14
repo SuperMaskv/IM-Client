@@ -1,7 +1,7 @@
-﻿using Unity;
-using IM_Client.Services;
+﻿using IM_Client.Services;
 using IM_Client.ViewModels;
 using System;
+using Unity;
 
 namespace IM_Client.Utils
 {
@@ -18,11 +18,24 @@ namespace IM_Client.Utils
         }
 
         private MainWindowViewModel mainWindowViewModel;
+
         public MainWindowViewModel MainWindowVM
         {
             get
             {
                 return mainWindowViewModel != null ? mainWindowViewModel : mainWindowViewModel = container.Resolve<MainWindowViewModel>();
+            }
+        }
+
+        private SendFileWindowViewModel _sendFileWindowViewModel;
+
+        public SendFileWindowViewModel SendFileWindowViewModel
+        {
+            get
+            {
+                return _sendFileWindowViewModel != null
+                    ? _sendFileWindowViewModel
+                    : _sendFileWindowViewModel = container.Resolve<SendFileWindowViewModel>();
             }
         }
     }

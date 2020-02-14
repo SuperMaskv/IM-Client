@@ -1,14 +1,14 @@
 ﻿using IM_Client.Models;
 using IM_Client.Protocol.NoServerPacket;
+using IM_Client.Services;
 using IM_Client.Utils;
 using System;
-using System.Windows;
-using System.IO;
-using IM_Client.Services;
-using System.Linq;
-using System.Net;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Windows;
 
 namespace IM_Client.Protocol.Handler
 {
@@ -16,7 +16,9 @@ namespace IM_Client.Protocol.Handler
     {
         public static readonly IChatService chatService = new ChatService();
         public ViewModelLocator viewModelLocator;
+
         public event Action<Packet> NoServerPacketHandlers;
+
         public static NoServerPacketHandler INSTANCE = new NoServerPacketHandler();
 
         public void INVOKE(Packet packet)
@@ -32,7 +34,6 @@ namespace IM_Client.Protocol.Handler
             NoServerPacketHandlers += NoServerTextMsgPacketHandler;
             NoServerPacketHandlers += NoServerPicMsgPacketHandler;
         }
-
 
         private void NoServerLoginPacketHanler(Packet packet)
         {
@@ -69,7 +70,6 @@ namespace IM_Client.Protocol.Handler
             {
                 App.Current.Dispatcher.Invoke(() => person.IsLoggedIn = true);
             }
-
 
             //如果收到的登录报文尚未被回复
             if (!noServerLoginPacket.IsReply)
@@ -126,7 +126,6 @@ namespace IM_Client.Protocol.Handler
                     {
                         person.HasSentNewMessage = true;
                     }
-
                 }
             });
         }

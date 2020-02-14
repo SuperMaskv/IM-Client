@@ -94,8 +94,10 @@
     <Compile Include="Commands\RelayCommand.cs" />
     <Compile Include="Commands\RelayCommandAsync.cs" />
     <Compile Include="Data\SampleMainWindowViewModel.cs" />
+    <Compile Include="Enums\SendFileMode.cs" />
     <Compile Include="Protocol\NoServerPacket\NoServerLogoutPacket.cs" />
     <Compile Include="Protocol\NoServerPacket\NoServerPicMsgPacket.cs" />
+    <Compile Include="Protocol\NoServerPacket\NoServerSendFilePacket.cs" />
     <Compile Include="Protocol\NoServerPacket\TextMessagePacket.cs" />
     <Compile Include="Protocol\PacketType.cs" />
     <Compile Include="Enums\UserModes.cs" />
@@ -106,6 +108,8 @@
     <Compile Include="Protocol\NoServerPacket\NoServerLoginPacket.cs" />
     <Compile Include="Protocol\Packet.cs" />
     <Compile Include="Protocol\PacketCodec.cs" />
+    <Compile Include="FileTransfer\Receive.cs" />
+    <Compile Include="FileTransfer\Send.cs" />
     <Compile Include="Services\ChatService.cs" />
     <Compile Include="Services\DialogService.cs" />
     <Compile Include="Services\IChatService.cs" />
@@ -114,12 +118,22 @@
     <Compile Include="Utils\ByteBitmapSourceConverter.cs" />
     <Compile Include="Utils\ViewModelLocator.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="ViewModels\SendFileWindowViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\ChatView.xaml.cs">
       <DependentUpon>ChatView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ReceiveFileView.xaml.cs">
+      <DependentUpon>ReceiveFileView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SendFileView.xaml.cs">
+      <DependentUpon>SendFileView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SendFileWindow.xaml.cs">
+      <DependentUpon>SendFileWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -138,6 +152,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\LoginView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ReceiveFileView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SendFileView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SendFileWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

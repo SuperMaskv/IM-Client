@@ -14,7 +14,7 @@
         ShowTitleBar="True" BorderBrush="{DynamicResource PrimaryHueDarkBrush}"
         AllowsTransparency="True">
     <metro:MetroWindow.Background>
-        <SolidColorBrush Opacity="0.8" Color="White"/>
+        <SolidColorBrush Opacity="0.8" Color="White" />
     </metro:MetroWindow.Background>
 
     <i:Interaction.Triggers>

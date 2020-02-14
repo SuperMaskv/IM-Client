@@ -50,17 +50,32 @@
             <DataTemplate x:Key="LoginTemplate">
                 <views:LoginView />
             </DataTemplate>
+            <DataTemplate x:Key="SendFileTemplate">
+                <views:SendFileView />
+            </DataTemplate>
+            <DataTemplate x:Key="ReceiveFileTemplate">
+                <views:ReceiveFileView />
+            </DataTemplate>
 
             <Style x:Key="ChatContentStyle" TargetType="ContentControl">
                 <Setter Property="ContentTemplate" Value="{StaticResource LoginTemplate}" />
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding UserMode}" Value="{x:Static enums:UserModes.Chat}">
-                        <Setter Property="ContentTemplate" Value="{StaticResource ChatTemplate}"/>
+                        <Setter Property="ContentTemplate" Value="{StaticResource ChatTemplate}" />
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
 
-            <utils:ViewModelLocator x:Key="VMLocator"/>
+            <Style x:Key="FileTransferStyle" TargetType="{x:Type ContentControl}">
+                <Setter Property="ContentTemplate" Value="{StaticResource SendFileTemplate}"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding SendFileMode}" Value="{x:Static enums:SendFileMode.Receive}">
+                        <Setter Property="ContentTemplate" Value="{StaticResource ReceiveFileTemplate}"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <utils:ViewModelLocator x:Key="VMLocator" />
             <utils:ByteBitmapSourceConverter x:Key="BitmapSourceConverter" />
             <BitmapImage x:Key="BlankImage" UriSource="/Imgs/blank.png" />
         </ResourceDictionary>

@@ -10,7 +10,9 @@ namespace IM_Client.Commands
         private readonly Predicate<object> _canExecute;
         private bool isExecuting;
 
-        public RelayCommandAsync(Func<Task> execute) : this(execute, null) { }
+        public RelayCommandAsync(Func<Task> execute) : this(execute, null)
+        {
+        }
 
         public RelayCommandAsync(Func<Task> execute, Predicate<object> canExecute)
         {

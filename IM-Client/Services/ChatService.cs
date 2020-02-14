@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using IM_Client.Protocol;
+using IM_Client.Protocol.Handler;
+using System;
 using System.Net;
 using System.Net.Sockets;
-using IM_Client.Protocol;
-using IM_Client.Protocol.Handler;
 using System.Threading;
 
 namespace IM_Client.Services
@@ -14,7 +10,9 @@ namespace IM_Client.Services
     public class ChatService : IChatService
     {
         public event Action<Packet> BroadcastPacket;
+
         public event Action<Packet, IPEndPoint> UnicastPacket;
+
         public event Action UdpListener;
 
         public ChatService()
@@ -23,7 +21,6 @@ namespace IM_Client.Services
             UnicastPacket += SendUnicast;
             UdpListener += UdpListen;
         }
-
 
         public void InvokeBroadcastPacketEvent(Packet packet)
         {
@@ -55,11 +52,9 @@ namespace IM_Client.Services
             Console.WriteLine(Thread.CurrentThread.Name);
             UdpClient rcvClient = new UdpClient(20000);
 
-
             var rcvResult = rcvClient.ReceiveAsync();
 
             NoServerPacketHandler.INSTANCE.INVOKE(PacketCodec.INSTANCE.Decode(rcvResult.Result.Buffer));
-
         }
     }
 }

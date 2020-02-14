@@ -7,6 +7,7 @@ using IM_Client.Protocol.NoServerPacket;
 using IM_Client.Services;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Net;
@@ -14,8 +15,6 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Diagnostics;
-using System.Drawing.Imaging;
 
 namespace IM_Client.ViewModels
 {
@@ -26,13 +25,10 @@ namespace IM_Client.ViewModels
         private int MAX_IMAGE_WIDTH = 1024;
         private int MAX_IMAGE_HEIGHT = 1024;
 
-
-
         private static readonly int LISTEN_PORT = 20000;
         public IPEndPoint REMOTE = new IPEndPoint(IPAddress.Any, 0);
         public UdpClient RcvCient;
         public IPEndPoint LOCAL;
-
 
         public MainWindowViewModel(IChatService chatSvc, IDialogService dialogSvc)
         {
@@ -44,6 +40,7 @@ namespace IM_Client.ViewModels
         #region Fields
 
         private string _userName;
+
         public string UserName
         {
             get { return _userName; }
@@ -55,6 +52,7 @@ namespace IM_Client.ViewModels
         }
 
         private string _profilePic;
+
         public string ProfilePic
         {
             get { return _profilePic; }
@@ -66,6 +64,7 @@ namespace IM_Client.ViewModels
         }
 
         private string _textMessage;
+
         public string TextMessage
         {
             get { return _textMessage; }
@@ -77,6 +76,7 @@ namespace IM_Client.ViewModels
         }
 
         private bool _isNoServer;
+
         public bool IsNoServer
         {
             get
@@ -91,6 +91,7 @@ namespace IM_Client.ViewModels
         }
 
         private bool _hasServer;
+
         public bool HasServer
         {
             get { return _hasServer; }
@@ -102,6 +103,7 @@ namespace IM_Client.ViewModels
         }
 
         private ICommand _loginButtonCommand;
+
         public ICommand LoginButtonCommand
         {
             get
@@ -112,6 +114,7 @@ namespace IM_Client.ViewModels
         }
 
         private UserModes _userMode;
+
         public UserModes UserMode
         {
             get { return _userMode; }
@@ -123,6 +126,7 @@ namespace IM_Client.ViewModels
         }
 
         private ObservableCollection<Participant> _participants = new ObservableCollection<Participant>();
+
         public ObservableCollection<Participant> Participants
         {
             get { return _participants; }
@@ -134,6 +138,7 @@ namespace IM_Client.ViewModels
         }
 
         private Participant _selectedParticipant;
+
         public Participant SelectedParticipant
         {
             get { return _selectedParticipant; }
@@ -144,10 +149,13 @@ namespace IM_Client.ViewModels
                 OnPropertyChanged();
             }
         }
-        #endregion
+
+        #endregion Fields
 
         #region SelectProfilePicCommand
+
         private ICommand _selectProfilePicCommand;
+
         public ICommand SelectedProfilePicCommand
         {
             get
@@ -171,10 +179,13 @@ namespace IM_Client.ViewModels
                 ProfilePic = pic;
             }
         }
-        #endregion
+
+        #endregion SelectProfilePicCommand
 
         #region OpenImageCommand
+
         private ICommand _openImageCommand;
+
         public ICommand OpenImageCommand
         {
             get
@@ -183,17 +194,20 @@ namespace IM_Client.ViewModels
                     = new RelayCommand<ChatMessage>((m) => OpenImage(m)));
             }
         }
+
         private void OpenImage(ChatMessage chatMessage)
         {
             var img = chatMessage.Picture;
             if (string.IsNullOrEmpty(img) || !File.Exists(img)) return;
             Process.Start(img);
-
         }
-        #endregion
+
+        #endregion OpenImageCommand
 
         #region NoServerLoginCommand
+
         private ICommand _noServerLoginCommand;
+
         public ICommand NoServerLoginCommand
         {
             get
@@ -243,10 +257,12 @@ namespace IM_Client.ViewModels
             }
         }
 
-        #endregion
+        #endregion NoServerLoginCommand
 
         #region NoServerLogoutCommand
+
         private ICommand _noServerLogoutCommand;
+
         public ICommand NoServerLogoutCommand
         {
             get
@@ -263,10 +279,13 @@ namespace IM_Client.ViewModels
 
             chatService.InvokeBroadcastPacketEvent(logoutPacket);
         }
-        #endregion
+
+        #endregion NoServerLogoutCommand
 
         #region NoServerTextMsgCommand
+
         private ICommand _noServerTextMsgCommand;
+
         public ICommand NoServerTextMsgCommand
         {
             get
@@ -302,10 +321,13 @@ namespace IM_Client.ViewModels
                         && SelectedParticipant != null
                         && SelectedParticipant.IsLoggedIn == true;
         }
-        #endregion
+
+        #endregion NoServerTextMsgCommand
 
         #region Send Picture Message Without Server
+
         private ICommand _noServerPicMsgCommand;
+
         public ICommand NoServerPicMsgCommand
         {
             get
@@ -357,11 +379,36 @@ namespace IM_Client.ViewModels
                 SelectedParticipant.ChatMessages.Add(chatMessage);
             }
         }
-        #endregion
+
+        #endregion Send Picture Message Without Server
+
+        #region Send File Command Without Server
+
+        private ICommand _noServerSendFileCommand;
+
+        public ICommand NoServerSendFileCommand
+        {
+            get
+            {
+                return _noServerSendFileCommand ?? (_noServerSendFileCommand
+                    = new RelayCommand((o) => NoServerSendFile(), (o) => CanNoServerSendFile()));
+            }
+        }
+
+        public bool CanNoServerSendFile()
+        {
+            return SelectedParticipant != null;
+        }
+
+        public void NoServerSendFile()
+        {
+        }
+
+        #endregion Send File Command Without Server
 
         #region LoginCommand
-        private ICommand _loginCommand;
 
+        private ICommand _loginCommand;
 
         public ICommand LoginCommand
         {
@@ -381,6 +428,7 @@ namespace IM_Client.ViewModels
         {
             dialogService.ShowNotification("Login");
         }
-        #endregion
+
+        #endregion LoginCommand
     }
 }

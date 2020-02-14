@@ -3,9 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 /*
- * 
+ *
  */
+
 namespace IM_Client.Protocol
 {
     public class PacketCodec

@@ -104,7 +104,7 @@ namespace IM_Client.Data
             Participants.Add(new Participant { UserName = "Wonder Woman", ChatMessages = someChatter, IsLoggedIn = false });
             Participants.Add(new Participant { UserName = "Aquaman", ChatMessages = someChatter, HasSentNewMessage = true });
             Participants.Add(new Participant { UserName = "Captain Canada", ChatMessages = someChatter, HasSentNewMessage = true });
-            Participants.Add(new Participant { UserName = "Iron Man", ChatMessages = someChatter});
+            Participants.Add(new Participant { UserName = "Iron Man", ChatMessages = someChatter });
 
             SelectedParticipant = Participants.First();
         }
