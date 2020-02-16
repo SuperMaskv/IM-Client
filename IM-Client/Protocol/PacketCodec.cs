@@ -24,6 +24,12 @@ namespace IM_Client.Protocol
             packetMap.Add(PacketType.NO_SERVER_TEXT_MSG, new NoServerPacket.TextMessagePacket());
             packetMap.Add(PacketType.NO_SERVER_PIC_MSG, new NoServerPacket.NoServerPicMsgPacket());
             packetMap.Add(PacketType.NO_SERVER_SEND_FILE, new NoServerPacket.NoServerSendFilePacket());
+
+            packetMap.Add(PacketType.LOGIN, new ServerPacket.LoginPacket());
+            packetMap.Add(PacketType.LOGOUT, new ServerPacket.LogoutPacket());
+            packetMap.Add(PacketType.ADD_CONTACT, new ServerPacket.AddContactPacket());
+            packetMap.Add(PacketType.REMOVE_CONTACT, new ServerPacket.RemoveContactPacket());
+            packetMap.Add(PacketType.EDIT_CONTACT_ALIAS, new ServerPacket.EditContactAliasPacket());
         }
 
         public byte[] Encode(Packet packet)

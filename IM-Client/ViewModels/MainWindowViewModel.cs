@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using IM_Client.Utils;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace IM_Client.ViewModels
 {
@@ -26,10 +27,13 @@ namespace IM_Client.ViewModels
         private IDialogService dialogService;
         private int MAX_IMAGE_WIDTH = 1024;
         private int MAX_IMAGE_HEIGHT = 1024;
+        private ViewModelLocator locator = (ViewModelLocator)Application.Current.Resources["VMLocator"];
+
 
         public IPEndPoint REMOTE = new IPEndPoint(IPAddress.Any, 0);
         public UdpClient RcvCient;
         public IPEndPoint LOCAL;
+        public TcpClient TcpClient;
 
         public MainWindowViewModel(IChatService chatSvc, IDialogService dialogSvc)
         {
@@ -48,6 +52,39 @@ namespace IM_Client.ViewModels
             set
             {
                 _userName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        //private string _userPwd;
+        //public string UserPwd
+        //{
+        //    get { return _userPwd; }
+        //    set
+        //    {
+        //        _userPwd = value;
+        //        OnPropertyChanged();
+        //    }
+        //}
+
+        private string _serverAddress;
+        public string ServerAddress
+        {
+            get { return _serverAddress; }
+            set
+            {
+                _serverAddress = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _serverPort;
+        public string ServerPort
+        {
+            get { return _serverPort; }
+            set
+            {
+                _serverPort = value;
                 OnPropertyChanged();
             }
         }
@@ -99,6 +136,7 @@ namespace IM_Client.ViewModels
             set
             {
                 _hasServer = value;
+                LoginButtonCommand = _hasServer ? LoginCommand : NoServerLoginCommand;
                 OnPropertyChanged();
             }
         }
@@ -109,8 +147,14 @@ namespace IM_Client.ViewModels
         {
             get
             {
-                if (HasServer) return LoginCommand;
-                else return NoServerLoginCommand;
+                return _loginButtonCommand ?? (_loginButtonCommand
+                    = NoServerLoginCommand);
+            }
+
+            set
+            {
+                _loginButtonCommand = value;
+                OnPropertyChanged();
             }
         }
 
@@ -171,7 +215,7 @@ namespace IM_Client.ViewModels
             var pic = dialogService.OpenFile("Select image file", "Images (*.jpg;*.png)|*.jpg;*.png");
             if (!string.IsNullOrEmpty(pic))
             {
-                var img = Image.FromFile(pic);
+                var img = System.Drawing.Image.FromFile(pic);
                 if (img.Width > MAX_IMAGE_WIDTH || img.Height > MAX_IMAGE_HEIGHT)
                 {
                     dialogService.ShowNotification($"Image size should be {MAX_IMAGE_WIDTH} x {MAX_IMAGE_HEIGHT} or less.");
@@ -421,18 +465,36 @@ namespace IM_Client.ViewModels
             get
             {
                 return _loginCommand ?? (_loginCommand =
-                    new RelayCommand((o) => Login(), (o) => CanLogin()));
+                    new RelayCommand((o) => Login(o), (o) => CanLogin()));
             }
         }
 
         private bool CanLogin()
         {
-            return true;
+            IPAddress ipTest;
+            int intTest;
+            return !string.IsNullOrEmpty(UserName)
+                //&& !string.IsNullOrEmpty(UserPwd)
+                && !string.IsNullOrEmpty(ServerAddress)
+                && !string.IsNullOrEmpty(ServerPort)
+                && IPAddress.TryParse(ServerAddress, out ipTest)
+                && Int32.TryParse(ServerPort, out intTest);
+
         }
 
-        private void Login()
+        private void Login(object o)
         {
-            dialogService.ShowNotification("Login");
+            try
+            {
+                var pwd = ((PasswordBox)o).Password;
+                Console.WriteLine(pwd);
+                TcpClient = new TcpClient(ServerAddress, int.Parse(ServerPort));
+            }
+            catch (Exception ex)
+            {
+                locator.InfoDialogViewModel.Info = ex.Message;
+                locator.InfoDialogViewModel.OpenDialogCommand.Execute(new object());
+            }
         }
 
         #endregion LoginCommand

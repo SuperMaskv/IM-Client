@@ -12,7 +12,6 @@
 
         public string Author { get; set; }
 
-
         public override byte getPacketType()
         {
             return PacketType.NO_SERVER_SEND_FILE;

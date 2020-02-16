@@ -38,5 +38,15 @@ namespace IM_Client.Utils
                     = container.Resolve<FileTransferWindowViewModel>());
             }
         }
+
+        private InfoDialogViewModel _infoDialogViewModel;
+        public InfoDialogViewModel InfoDialogViewModel
+        {
+            get
+            {
+                return _infoDialogViewModel ?? (_infoDialogViewModel
+                    = container.Resolve<InfoDialogViewModel>());
+            }
+        }
     }
 }

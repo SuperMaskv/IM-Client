@@ -1,13 +1,13 @@
 ﻿<metro:MetroWindow x:Class="IM_Client.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:IM_Client"
-        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-        xmlns:data="clr-namespace:IM_Client.Data"
-        xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
-        mc:Ignorable="d"
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                   xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+                   xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:data="clr-namespace:IM_Client.Data"
+                   mc:Ignorable="d"
         DataContext="{Binding Source={StaticResource VMLocator},Path=MainWindowVM}"
         d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True,Type={x:Type data:SampleMainWindowViewModel}}"
         Title="IM-Client" Height="450" Width="800" TitleCaps="False" TitleCharacterCasing="Normal"
@@ -18,14 +18,19 @@
     </metro:MetroWindow.Background>
 
     <i:Interaction.Triggers>
-        <i:EventTrigger>
-            <i:InvokeCommandAction Command="" />
-        </i:EventTrigger>
         <i:EventTrigger EventName="Closing">
             <i:InvokeCommandAction Command="{Binding NoServerLogoutCommand}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
+
     <Grid>
+        <materialDesign:DialogHost DataContext="{Binding Source={StaticResource VMLocator},Path=InfoDialogViewModel}"
+                                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                   IsOpen="{Binding IsInfoDialogOpen}"
+                                   DialogContent="{Binding DialogContent}"
+                                   CloseOnClickAway="True" 
+                                   />
+
         <ContentControl Content="{Binding}" Style="{StaticResource ChatContentStyle}" />
     </Grid>
 </metro:MetroWindow>

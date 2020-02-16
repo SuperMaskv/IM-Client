@@ -110,6 +110,12 @@
     <Compile Include="Protocol\PacketCodec.cs" />
     <Compile Include="FileTransfer\Receive.cs" />
     <Compile Include="FileTransfer\Send.cs" />
+    <Compile Include="Protocol\ServerPacket\AddContactPacket.cs" />
+    <Compile Include="Protocol\ServerPacket\EditContactAliasPacket.cs" />
+    <Compile Include="Protocol\ServerPacket\LoginPacket.cs" />
+    <Compile Include="Protocol\ServerPacket\LogoutPacket.cs" />
+    <Compile Include="Protocol\ServerPacket\RemoveContactPacket.cs" />
+    <Compile Include="Protocol\ServerPacket\ToUserMessagePacket.cs" />
     <Compile Include="Services\ChatService.cs" />
     <Compile Include="Services\DialogService.cs" />
     <Compile Include="Services\IChatService.cs" />
@@ -117,11 +123,15 @@
     <Compile Include="Utils\BringNewItemIntoViewBehavior.cs" />
     <Compile Include="Utils\ByteBitmapSourceConverter.cs" />
     <Compile Include="Utils\ViewModelLocator.cs" />
+    <Compile Include="ViewModels\InfoDialogViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\FileTransferWindowViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\ChatView.xaml.cs">
       <DependentUpon>ChatView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\InfoDialogView.xaml.cs">
+      <DependentUpon>InfoDialogView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
@@ -148,6 +158,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\ChatView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\InfoDialogView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
