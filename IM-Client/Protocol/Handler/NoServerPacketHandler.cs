@@ -8,7 +8,6 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace IM_Client.Protocol.Handler
@@ -178,39 +177,73 @@ namespace IM_Client.Protocol.Handler
             Console.WriteLine("Receive NoServerSendFilePacket");
             NoServerSendFilePacket sendFilePacket = (NoServerSendFilePacket)packet;
 
-            NoServerSendFilePacket responsePacket = new NoServerSendFilePacket();
-            responsePacket.IsSend = false;
+            var person = locator.MainWindowVM.Participants
+                            .Where((p) => string.Equals(p.UserName, sendFilePacket.Author))
+                            .FirstOrDefault();
+            if (person == null) return;
+            locator.FileTransferWindowViewModel.REMOTE = person.Remote;
 
             //判断是请求报文还是应答报文
             if (sendFilePacket.IsSend)
             {
                 //请求报文
+                NoServerSendFilePacket responsePacket = new NoServerSendFilePacket();
+                responsePacket.IsSend = false;
+
                 string messageBoxText = "用户 "
                     + sendFilePacket.Author
                     + " 想要发送给您 "
                     + sendFilePacket.FileName
                     + " 是否接受？";
 
-                var result = Task.Run(() => MessageBox.Show(messageBoxText, "", MessageBoxButton.YesNo));
+                MessageBoxResult result = MessageBox.Show(messageBoxText, "", MessageBoxButton.YesNo);
 
-                switch (result.Result)
+                switch (result)
                 {
                     case MessageBoxResult.Yes:
                         responsePacket.WillSend = true;
                         responsePacket.Author = locator.MainWindowVM.UserName;
                         responsePacket.Port = 8888;
+
+                        //打开接受文件窗口
+                        locator.FileTransferWindowViewModel.SendFileMode = Enums.SendFileMode.Receive;
+                        locator.FileTransferWindowViewModel.Listen();
+                        App.Current.Dispatcher.Invoke(delegate
+                        {
+                            FileTransferWindow window = new FileTransferWindow();
+                            window.Show();
+                        });
+
                         break;
+
                     case MessageBoxResult.No:
                         responsePacket.WillSend = false;
                         break;
                 }
+
+                chatService.InvokeUnicastPacketEvent(responsePacket, person.Remote);
             }
             else
             {
-
+                //应答报文
+                if (sendFilePacket.WillSend)
+                {
+                    //对方同意发送文件,就发送文件
+                    locator.FileTransferWindowViewModel.Send();
+                }
+                else
+                {
+                    //对方不同意发送文件，弹出消息框，并关闭文件传输窗口
+                    MessageBox.Show("对方拒绝了您的请求");
+                    foreach (var window in Application.Current.Windows)
+                    {
+                        if (window.GetType() == typeof(FileTransferWindow))
+                        {
+                            (window as FileTransferWindow).Close();
+                        }
+                    }
+                }
             }
-
-            chatService.InvokeUnicastPacketEvent()
         }
     }
 }

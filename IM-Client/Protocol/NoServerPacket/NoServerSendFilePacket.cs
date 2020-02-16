@@ -8,6 +8,10 @@
 
         public bool IsSend { get; set; }
 
+        public bool WillSend { get; set; }
+
+        public string Author { get; set; }
+
 
         public override byte getPacketType()
         {

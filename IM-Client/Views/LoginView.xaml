@@ -12,7 +12,7 @@
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
         <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center"
                              Width="240" Height="380">
-            <Grid>
+            <Grid FocusManager.FocusedElement="{Binding ElementName=UsernameTxtBox}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="160" />
                     <RowDefinition />

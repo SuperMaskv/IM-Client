@@ -406,10 +406,11 @@ namespace IM_Client.ViewModels
             FileTransferWindow window = new FileTransferWindow();
             var locator = (ViewModelLocator)Application.Current.Resources["VMLocator"];
             locator.FileTransferWindowViewModel.SendFileMode = SendFileMode.Send;
+            locator.FileTransferWindowViewModel.REMOTE = SelectedParticipant.Remote;
             window.Show();
         }
 
-        #endregion Send File Command Without Server
+        #endregion
 
         #region LoginCommand
 

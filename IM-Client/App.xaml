@@ -5,7 +5,7 @@
              xmlns:views="clr-namespace:IM_Client.Views"
              xmlns:enums="clr-namespace:IM_Client.Enums"
              xmlns:utils="clr-namespace:IM_Client.Utils"
-             StartupUri="MainWindow.xaml">
+             StartupUri="MainWindow.xaml" ShutdownMode="OnMainWindowClose">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
