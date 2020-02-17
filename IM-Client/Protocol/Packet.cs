@@ -4,6 +4,9 @@
     {
         public abstract byte getPacketType();
 
+        public long token { get; set; }
+
+
         public byte getVersion()
         {
             return 1;

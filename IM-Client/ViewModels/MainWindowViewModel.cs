@@ -3,21 +3,21 @@ using IM_Client.Enums;
 using IM_Client.Models;
 using IM_Client.Protocol;
 using IM_Client.Protocol.Handler;
+using IM_Client.Protocol.ServerPacket;
 using IM_Client.Protocol.NoServerPacket;
 using IM_Client.Services;
+using IM_Client.Utils;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Input;
-using IM_Client.Utils;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace IM_Client.ViewModels
 {
@@ -479,16 +479,36 @@ namespace IM_Client.ViewModels
                 && !string.IsNullOrEmpty(ServerPort)
                 && IPAddress.TryParse(ServerAddress, out ipTest)
                 && Int32.TryParse(ServerPort, out intTest);
-
         }
+
+        private Thread tcpPacketHandler;
 
         private void Login(object o)
         {
             try
             {
                 var pwd = ((PasswordBox)o).Password;
-                Console.WriteLine(pwd);
+                //与服务器建立tcp连接
                 TcpClient = new TcpClient(ServerAddress, int.Parse(ServerPort));
+                //获取stream对象
+                NetworkStream stream = TcpClient.GetStream();
+                //创建登录报文
+                LoginPacket loginPacket = new LoginPacket()
+                {
+                    userName = UserName,
+                    userPwd = pwd
+                };
+                //Encode报文
+                var bytes = PacketCodec.INSTANCE.Encode(loginPacket);
+                //发送报文
+                if (stream.CanWrite)
+                {
+                    stream.Write(bytes, 0, bytes.Length);
+
+                }
+                //建立监听线程
+                tcpPacketHandler = new Thread(new ThreadStart(Spliter));
+                tcpPacketHandler.Start();
             }
             catch (Exception ex)
             {
@@ -496,6 +516,56 @@ namespace IM_Client.ViewModels
                 locator.InfoDialogViewModel.OpenDialogCommand.Execute(new object());
             }
         }
+        //tcp监听，拆包
+        private void Spliter()
+        {
+            try
+            {
+                NetworkStream stream = TcpClient.GetStream();
+                while (stream.CanRead)
+                {
+                    if (!stream.DataAvailable) continue;
+                    //尝试读取报文头部
+                    byte[] headerBytes = new byte[8];
+                    stream.Read(headerBytes, 0, 8);
+
+                    byte[] magicBytes = new byte[2];
+                    magicBytes[0] = headerBytes[1];
+                    magicBytes[1] = headerBytes[0];
+                    //检查报文头部的合法性
+                    if (BitConverter.ToInt16(magicBytes, 0) != unchecked((short)0xabcd))
+                    {
+                        TcpClient.Close();
+                        TcpClient.Connect(ServerAddress, int.Parse(ServerPort));
+                        continue;
+                    }
+                    //读取报文body
+                    byte[] length = new byte[] { headerBytes[7], headerBytes[6], headerBytes[5], headerBytes[4] };
+
+                    var bodyLength = BitConverter.ToUInt32(length, 0);
+                    byte[] bodyBytes = new byte[bodyLength];
+                    stream.Read(bodyBytes, 0, (int)bodyLength);
+                    //合并header和body
+                    byte[] packetBytes = new byte[bodyLength + 8];
+                    Buffer.BlockCopy(headerBytes, 0, packetBytes, 0, 8);
+                    Buffer.BlockCopy(bodyBytes, 0, packetBytes, 8, (int)bodyLength);
+                    //将合并后的报文交给解码器
+                    var packet = PacketCodec.INSTANCE.Decode(packetBytes);
+                    //将报文交给处理器处理
+                    ServerPacketHandler.INSTANCE.handlers?.Invoke(packet);
+                }
+            }
+            catch (Exception ex)
+            {
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    locator.InfoDialogViewModel.Info = ex.Message;
+                    locator.InfoDialogViewModel.OpenDialogCommand.Execute(new object());
+                });
+            }
+        }
+
+        public long Token;
 
         #endregion LoginCommand
     }

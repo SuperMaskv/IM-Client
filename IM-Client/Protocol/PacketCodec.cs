@@ -25,6 +25,7 @@ namespace IM_Client.Protocol
             packetMap.Add(PacketType.NO_SERVER_PIC_MSG, new NoServerPacket.NoServerPicMsgPacket());
             packetMap.Add(PacketType.NO_SERVER_SEND_FILE, new NoServerPacket.NoServerSendFilePacket());
 
+            packetMap.Add(PacketType.SERVER_RESPONSE, new ServerPacket.ResponsePacket());
             packetMap.Add(PacketType.LOGIN, new ServerPacket.LoginPacket());
             packetMap.Add(PacketType.LOGOUT, new ServerPacket.LogoutPacket());
             packetMap.Add(PacketType.ADD_CONTACT, new ServerPacket.AddContactPacket());
@@ -39,11 +40,13 @@ namespace IM_Client.Protocol
 
             byte[] bytes = new byte[packetbytes.Length + 8];
             byte[] magicBytes = BitConverter.GetBytes(MAGIC);
+            Array.Reverse(magicBytes);
             Array.Copy(magicBytes, 0, bytes, 0, magicBytes.Length);
 
             bytes[2] = packet.getVersion();
             bytes[3] = packet.getPacketType();
             byte[] lengthBytes = BitConverter.GetBytes(packetbytes.Length);
+            Array.Reverse(lengthBytes);
             Array.Copy(lengthBytes, 0, bytes, 4, lengthBytes.Length);
 
             Array.Copy(packetbytes, 0, bytes, 8, packetbytes.Length);
@@ -56,6 +59,7 @@ namespace IM_Client.Protocol
             byte[] type = bytes.Skip(3).Take(1).ToArray();
 
             byte[] lengthBytes = bytes.Skip(4).Take(4).ToArray();
+            Array.Reverse(lengthBytes);
             var length = BitConverter.ToUInt32(lengthBytes, 0);
 
             byte[] msgBytes = new byte[length];

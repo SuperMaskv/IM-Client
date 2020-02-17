@@ -95,6 +95,7 @@
     <Compile Include="Commands\RelayCommandAsync.cs" />
     <Compile Include="Data\SampleMainWindowViewModel.cs" />
     <Compile Include="Enums\SendFileMode.cs" />
+    <Compile Include="Protocol\Handler\ServerPacketHandler.cs" />
     <Compile Include="Protocol\NoServerPacket\NoServerLogoutPacket.cs" />
     <Compile Include="Protocol\NoServerPacket\NoServerPicMsgPacket.cs" />
     <Compile Include="Protocol\NoServerPacket\NoServerSendFilePacket.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="Protocol\ServerPacket\LoginPacket.cs" />
     <Compile Include="Protocol\ServerPacket\LogoutPacket.cs" />
     <Compile Include="Protocol\ServerPacket\RemoveContactPacket.cs" />
+    <Compile Include="Protocol\ServerPacket\ResponsePacket.cs" />
     <Compile Include="Protocol\ServerPacket\ToUserMessagePacket.cs" />
     <Compile Include="Services\ChatService.cs" />
     <Compile Include="Services\DialogService.cs" />
