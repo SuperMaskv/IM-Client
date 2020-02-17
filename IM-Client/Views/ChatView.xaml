@@ -319,6 +319,17 @@
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                      ScrollViewer.VerticalScrollBarVisibility="Auto" />
         </Border>
+        <Button Grid.Row="2" VerticalAlignment="Bottom" Content="添加好友">
+            <Button.Resources>
+                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding HasServer}" Value="False">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Resources>
+        </Button>
 
         <!--Messages-->
         <ItemsControl x:Name="MessagesItemsCtrl" Grid.Column="1" Margin="0 5 0 0"
