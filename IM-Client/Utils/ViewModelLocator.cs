@@ -48,5 +48,15 @@ namespace IM_Client.Utils
                     = container.Resolve<InfoDialogViewModel>());
             }
         }
+
+        private AddContactViewModel _addContactViewModel;
+        public AddContactViewModel AddContactViewModel
+        {
+            get
+            {
+                return _addContactViewModel ?? (_addContactViewModel
+                    = container.Resolve<AddContactViewModel>());
+            }
+        }
     }
 }

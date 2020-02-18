@@ -568,5 +568,16 @@ namespace IM_Client.ViewModels
         public long Token;
 
         #endregion LoginCommand
+
+        #region Open Add Contact Dialog Command
+        private ICommand _openAddContactDialogCommand;
+        public ICommand OpenAddContactDialogCommand;
+        
+        private void OpenAddContactDialog()
+        {
+
+        }
+
+        #endregion
     }
 }
