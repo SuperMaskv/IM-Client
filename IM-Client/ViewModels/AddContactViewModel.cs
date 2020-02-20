@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using IM_Client.Commands;
+using IM_Client.Protocol.ServerPacket;
+using IM_Client.Utils;
 using IM_Client.Views;
-using IM_Client.Commands;
+using System.Net.Sockets;
+using System.Windows;
+using System.Windows.Input;
+using IM_Client.Protocol;
 
 namespace IM_Client.ViewModels
 {
     public class AddContactViewModel : ViewModelBase
     {
         public AddContactViewModel() { }
+
+        private ViewModelLocator locator = (ViewModelLocator)Application.Current.Resources["VMLocator"];
 
         private bool _isDialogOpen;
         public bool IsDialogOpen
@@ -118,9 +120,21 @@ namespace IM_Client.ViewModels
         {
             //关闭dialog
             IsDialogOpen = false;
-
+            //创建报文
+            AddContactPacket addContactPacket = new AddContactPacket()
+            {
+                token = locator.MainWindowVM.Token,
+                userName = locator.MainWindowVM.UserName,
+                contactName = ContactName,
+                alias = Alias
+            };
+            //获取NetStream
+            NetworkStream stream = locator.MainWindowVM.TcpClient.GetStream();
+            //Encode报文
+            var packetBytes = PacketCodec.INSTANCE.Encode(addContactPacket);
+            //发送报文
+            stream.Write(packetBytes, 0, packetBytes.Length);
         }
-
         #endregion
     }
 }

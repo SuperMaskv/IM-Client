@@ -16,9 +16,9 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <TextBox VerticalAlignment="Bottom" Margin="10" materialDesign:HintAssist.Hint="联系人ID"
-                 Text="{Binding ContactName}"/>
+                 Text="{Binding ContactName,UpdateSourceTrigger=PropertyChanged}"/>
         <TextBox Grid.Row="1" VerticalAlignment="Bottom" Margin="10" materialDesign:HintAssist.Hint="备注"
-                 Text="{Binding Alias}"/>
+                 Text="{Binding Alias,UpdateSourceTrigger=PropertyChanged}"/>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>

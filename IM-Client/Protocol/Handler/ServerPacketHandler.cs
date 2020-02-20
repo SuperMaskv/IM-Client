@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using IM_Client.Protocol.ServerPacket;
+﻿using IM_Client.Protocol.ServerPacket;
 using IM_Client.Utils;
+using System;
+using System.Windows;
+using IM_Client.Models;
 
 namespace IM_Client.Protocol.Handler
 {
@@ -19,10 +16,12 @@ namespace IM_Client.Protocol.Handler
 
         public ServerPacketHandler()
         {
-            handlers += LoginPacketHandler;
+            handlers += LoginResponseHandler;
+            handlers += ContactListPacketHanler;
+            handlers += OnlineContactPacket;
         }
 
-        public void LoginPacketHandler(Packet packet)
+        private void LoginResponseHandler(Packet packet)
         {
             //判断是否为登录响应报文
             if (!(packet is ResponsePacket)) return;
@@ -59,5 +58,43 @@ namespace IM_Client.Protocol.Handler
                 Console.WriteLine(ex.Message);
             }
         }
+
+        private void ContactListPacketHanler(Packet packet)
+        {
+            if (!(packet is ContactListPacket)) return;
+            Console.WriteLine("Receive ContactListPacket");
+            ContactListPacket contactListPacket = (ContactListPacket)packet;
+
+            //遍历联系人列表，并装载到UI中
+            foreach (var contact in contactListPacket.contacts)
+            {
+                locator.MainWindowVM.Participants.Add(new Participant()
+                {
+                    UserName = contact.alias == null ? contact.contactName : contact.alias,
+                    TrueName = contact.contactName,
+                    Photo = contact.photo,
+                    IsLoggedIn = false
+                });
+            }
+        }
+
+        private void OnlineContactPacket(Packet packet)
+        {
+            if (!(packet is OnlineContactPacket)) return;
+            Console.WriteLine("Receive OnlineContactPacket");
+            OnlineContactPacket onlineContactPacket = (OnlineContactPacket)packet;
+
+            foreach (var participant in locator.MainWindowVM.Participants)
+            {
+                foreach (var contact in onlineContactPacket.onlineContacts)
+                {
+                    if (participant.TrueName.Equals(contact))
+                    {
+                        participant.IsLoggedIn = true;
+                    }
+                }
+            }
+        }
+
     }
 }

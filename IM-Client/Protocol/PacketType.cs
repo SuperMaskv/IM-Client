@@ -40,6 +40,11 @@
         //修改联系人备注
         public static readonly byte EDIT_CONTACT_ALIAS = 0x06;
 
+        //返回联系人列表
+        public static readonly byte CONTACT_LIST = 0x0E;
+        //在线联系人报文
+        public static readonly byte ONLINE_CONTACT = 0x0F;
+
         //群组相关
         //创建群组
         public static readonly byte CREATE_GROUP = 0x07;
@@ -51,16 +56,16 @@
         public static readonly byte EDIT_GROUP_NAME = 0x09;
 
         //添加用户到群组
-        public static readonly byte ADD_USER = 0x10;
+        public static readonly byte ADD_USER = 0x0A;
 
         //将用户移除群组
-        public static readonly byte REMOVE_USER = 0x11;
+        public static readonly byte REMOVE_USER = 0x0B;
 
         //消息相关
         //私聊数据包
-        public static readonly byte TO_USER_MESSAGE = 0x12;
+        public static readonly byte TO_USER_MESSAGE = 0x0C;
 
         //群聊消息数据包
-        public static readonly byte TO_GROUP_MESSAGE = 0x13;
+        public static readonly byte TO_GROUP_MESSAGE = 0x0D;
     }
 }

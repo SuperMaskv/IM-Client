@@ -6,6 +6,7 @@
         public string contactName { get; set; }
         public string alias { get; set; }
 
+
         public override byte getPacketType()
         {
             return PacketType.ADD_CONTACT;
