@@ -58,5 +58,15 @@ namespace IM_Client.Utils
                     = container.Resolve<AddContactViewModel>());
             }
         }
+
+        private EditContactAliasViewModel _editContactAliasViewModel;
+        public EditContactAliasViewModel EditContactAliasViewModel
+        {
+            get
+            {
+                return _editContactAliasViewModel ?? (_editContactAliasViewModel
+                    = container.Resolve<EditContactAliasViewModel>());
+            }
+        }
     }
 }

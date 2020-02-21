@@ -3,19 +3,19 @@
     public class PacketType
     {
         //无服务器登录报文
-        public static readonly byte NO_SERVER_LOGIN = 0x11;
+        public static readonly byte NO_SERVER_LOGIN = 0xf1;
 
         //无服务器注销报文
-        public static readonly byte NO_SERVER_LOGOUT = 0x12;
+        public static readonly byte NO_SERVER_LOGOUT = 0xf2;
 
         //无服务器文字消息
-        public static readonly byte NO_SERVER_TEXT_MSG = 0x13;
+        public static readonly byte NO_SERVER_TEXT_MSG = 0xf3;
 
         //无服务器图片消息
-        public static readonly byte NO_SERVER_PIC_MSG = 0x14;
+        public static readonly byte NO_SERVER_PIC_MSG = 0xf4;
 
         //无服务器发送文件
-        public static readonly byte NO_SERVER_SEND_FILE = 0x15;
+        public static readonly byte NO_SERVER_SEND_FILE = 0xf5;
 
         //服务器报文标志
         public static readonly byte SERVER_RESPONSE = 0x00;
@@ -44,6 +44,8 @@
         public static readonly byte CONTACT_LIST = 0x0E;
         //在线联系人报文
         public static readonly byte ONLINE_CONTACT = 0x0F;
+        //向联系人通知下线状态
+        public static readonly byte OFFLINE_CONTACT = 0x10;
 
         //群组相关
         //创建群组

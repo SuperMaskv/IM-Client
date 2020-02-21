@@ -5,6 +5,8 @@
         public string msgSender { get; set; }
         public string msgRecipient { get; set; }
         public string msgContent { get; set; }
+        public byte[] photo { get; set; }
+
 
         public override byte getPacketType()
         {

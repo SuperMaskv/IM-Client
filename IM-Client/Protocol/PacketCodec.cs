@@ -33,6 +33,8 @@ namespace IM_Client.Protocol
             packetMap.Add(PacketType.EDIT_CONTACT_ALIAS, new ServerPacket.EditContactAliasPacket());
             packetMap.Add(PacketType.CONTACT_LIST, new ServerPacket.ContactListPacket());
             packetMap.Add(PacketType.ONLINE_CONTACT, new ServerPacket.OnlineContactPacket());
+            packetMap.Add(PacketType.OFFLINE_CONTACT, new ServerPacket.OfflineContactPacket());
+            packetMap.Add(PacketType.TO_USER_MESSAGE, new ServerPacket.ToUserMessagePacket());
         }
 
         public byte[] Encode(Packet packet)

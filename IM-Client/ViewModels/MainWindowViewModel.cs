@@ -128,6 +128,7 @@ namespace IM_Client.ViewModels
             }
         }
 
+        #region command mode switcher
         private bool _hasServer;
 
         public bool HasServer
@@ -137,6 +138,8 @@ namespace IM_Client.ViewModels
             {
                 _hasServer = value;
                 LoginButtonCommand = _hasServer ? LoginCommand : NoServerLoginCommand;
+                ClosingEventCommand = _hasServer ? LogoutCommand : NoServerLogoutCommand;
+                SendTxtMsgButtonCommand = _hasServer ? SendTextMsgCommand : NoServerTextMsgCommand;
                 OnPropertyChanged();
             }
         }
@@ -157,6 +160,37 @@ namespace IM_Client.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        private ICommand _closingEventCommand;
+        public ICommand ClosingEventCommand
+        {
+            get
+            {
+                return _closingEventCommand ?? (_closingEventCommand
+                    = NoServerLogoutCommand);
+            }
+            set
+            {
+                _closingEventCommand = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ICommand _sendTxtMsgButtonCommand;
+        public ICommand SendTxtMsgButtonCommand
+        {
+            get
+            {
+                return _sendTxtMsgButtonCommand ?? (_sendTxtMsgButtonCommand
+                    = NoServerTextMsgCommand);
+            }
+            set
+            {
+                _sendTxtMsgButtonCommand = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
 
         private UserModes _userMode;
 
@@ -190,7 +224,9 @@ namespace IM_Client.ViewModels
             set
             {
                 _selectedParticipant = value;
-                if (_selectedParticipant.HasSentNewMessage) _selectedParticipant.HasSentNewMessage = false;
+                if (_selectedParticipant != null)
+                    if (_selectedParticipant.HasSentNewMessage)
+                        _selectedParticipant.HasSentNewMessage = false;
                 OnPropertyChanged();
             }
         }
@@ -323,6 +359,8 @@ namespace IM_Client.ViewModels
             logoutPacket.UserName = UserName;
 
             chatService.InvokeBroadcastPacketEvent(logoutPacket);
+            //关闭应用程序
+            Application.Current.Shutdown();
         }
 
         #endregion NoServerLogoutCommand
@@ -336,11 +374,11 @@ namespace IM_Client.ViewModels
             get
             {
                 return _noServerTextMsgCommand ?? (_noServerTextMsgCommand
-                  = new RelayCommand((o) => SendTextMsg(), (o) => CanSendTextMsg()));
+                  = new RelayCommand((o) => SendTextMsgWithoutServer(), (o) => CanSendTextMsgWithoutServer()));
             }
         }
 
-        private void SendTextMsg()
+        private void SendTextMsgWithoutServer()
         {
             TextMessagePacket textMessagePacket = new TextMessagePacket();
             textMessagePacket.TextMessage = TextMessage;
@@ -359,7 +397,7 @@ namespace IM_Client.ViewModels
             TextMessage = string.Empty;
         }
 
-        private bool CanSendTextMsg()
+        private bool CanSendTextMsgWithoutServer()
         {
             return !string.IsNullOrEmpty(TextMessage)
                         && TextMessage.Length > 2
@@ -569,5 +607,133 @@ namespace IM_Client.ViewModels
 
         #endregion LoginCommand
 
+        #region Logout Command
+        private ICommand _logoutCommand;
+        public ICommand LogoutCommand
+        {
+            get
+            {
+                return _logoutCommand ?? (_logoutCommand
+                    = new RelayCommand((o) => Logout()));
+            }
+        }
+
+        private void Logout()
+        {
+            try
+            {
+                //获取NetworkStream
+                var stream = TcpClient.GetStream();
+                //创建Logout报文
+                LogoutPacket logoutPacket = new LogoutPacket();
+                logoutPacket.token = Token;
+                logoutPacket.userName = UserName;
+                //Encode报文
+                var packetBytes = PacketCodec.INSTANCE.Encode(logoutPacket);
+                //发送报文
+                if (stream.CanWrite)
+                    stream.Write(packetBytes, 0, packetBytes.Length);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                //关闭tcp连接
+                TcpClient.Close();
+                //关闭监听线程
+                tcpPacketHandler.Abort();
+                //关闭Application
+                Application.Current.Shutdown();
+            }
+
+        }
+        #endregion
+
+        #region Remove Contact Command
+        private ICommand _removeContactCommand;
+        public ICommand RemoveContactCommand
+        {
+            get
+            {
+                return _removeContactCommand ?? (_removeContactCommand
+                    = new RelayCommand((o) => RemoveContact(), (o) => CanRemoveContact()));
+            }
+        }
+
+        private bool CanRemoveContact()
+        {
+            return SelectedParticipant != null;
+        }
+
+        private void RemoveContact()
+        {
+            //获取NetworkStream
+            var stream = TcpClient.GetStream();
+            //构建报文
+            RemoveContactPacket removeContactPacket = new RemoveContactPacket()
+            {
+                token = Token,
+                userName = UserName,
+                contactName = SelectedParticipant.TrueName
+            };
+            //Encode
+            var packetBytes = PacketCodec.INSTANCE.Encode(removeContactPacket);
+            //发送报文
+            if (stream.CanWrite)
+            {
+                stream.Write(packetBytes, 0, packetBytes.Length);
+            }
+        }
+        #endregion
+
+        #region Send Text Message With Server
+        private ICommand _sendTextMsgCommand;
+        public ICommand SendTextMsgCommand
+        {
+            get
+            {
+                return _sendTextMsgCommand ?? (_sendTextMsgCommand
+                    = new RelayCommand((o) => SendTextMsg(), (o) => CanSendTextMsg()));
+            }
+        }
+
+        private bool CanSendTextMsg()
+        {
+            return !string.IsNullOrEmpty(TextMessage)
+                && SelectedParticipant != null;
+        }
+        private void SendTextMsg()
+        {
+            //获取NetworkStream
+            var stream = TcpClient.GetStream();
+            //构建报文
+            ToUserMessagePacket textMsg = new ToUserMessagePacket()
+            {
+                token = Token,
+                msgSender = UserName,
+                msgRecipient = SelectedParticipant.TrueName,
+                msgContent = TextMessage
+            };
+            //Encode
+            var packetBytes = PacketCodec.INSTANCE.Encode(textMsg);
+            //发送报文
+            if (stream.CanWrite)
+            {
+                stream.Write(packetBytes, 0, packetBytes.Length);
+            }
+            //在聊天框显示发送的消息
+            SelectedParticipant.ChatMessages.Add(new ChatMessage()
+            {
+                Author = UserName,
+                Message = TextMessage,
+                Time = DateTime.Now,
+                IsOriginNative = true
+            });
+            //清空输入框
+            TextMessage = string.Empty;
+        }
+        #endregion
     }
 }

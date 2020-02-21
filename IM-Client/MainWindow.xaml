@@ -19,7 +19,7 @@
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
-            <i:InvokeCommandAction Command="{Binding NoServerLogoutCommand}" />
+            <i:InvokeCommandAction Command="{Binding ClosingEventCommand}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
 

@@ -24,7 +24,7 @@
             <Setter Property="VerticalContentAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <Setter Property="Padding" Value="0" />
-            <Setter Property="Command" Value="{Binding NoServerTextMsgCommand}" />
+            <Setter Property="Command" Value="{Binding SendTxtMsgButtonCommand}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
@@ -316,6 +316,12 @@
                                    DialogContent="{Binding DialogContent}"
                                    CloseOnClickAway="True"
                                    Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+        <materialDesign:DialogHost DataContext="{Binding Source={StaticResource VMLocator},Path=EditContactAliasViewModel}"
+                                   VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                                   IsOpen="{Binding IsDialogOpen}"
+                                   DialogContent="{Binding DialogContent}"
+                                   CloseOnClickAway="True"
+                                   Grid.ColumnSpan="2" Grid.RowSpan="2"/>
 
         <!--Participants-->
         <Border Grid.RowSpan="2" BorderThickness="0 0 1 0" SnapsToDevicePixels="True"
@@ -352,7 +358,13 @@
                     Command="{Binding OpenDialogCommand}">
                 <materialDesign:PackIcon Kind="PersonAdd" Width="25" Height="25"/>
             </Button>
-            <Button Padding="5" Style="{StaticResource ToolBarButton}">
+            <Button Padding="5" Style="{StaticResource ToolBarButton}"
+                    DataContext="{Binding Source={StaticResource VMLocator},Path=EditContactAliasViewModel}"
+                    Command="{Binding OpenDialogCommand}">
+                <materialDesign:PackIcon Kind="UserEdit" Width="25" Height="25"/>
+            </Button>
+            <Button Padding="5" Style="{StaticResource ToolBarButton}" Foreground="Red"
+                    Command="{Binding RemoveContactCommand}">
                 <materialDesign:PackIcon Kind="PersonRemove" Width="25" Height="25" />
             </Button>
         </StackPanel>
@@ -396,7 +408,7 @@
                                  VerticalScrollBarVisibility="Auto"
                                  Text="{Binding TextMessage,UpdateSourceTrigger=PropertyChanged}">
                             <TextBox.InputBindings>
-                                <KeyBinding Key="Return" Command="{Binding NoServerTextMsgCommand}" />
+                                <KeyBinding Key="Return" Command="{Binding SendTxtMsgButtonCommand}" />
                             </TextBox.InputBindings>
                         </TextBox>
                         <!--Image-->
