@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using IM_Client.Commands;
-using System.Windows.Input;
+﻿using IM_Client.Commands;
 using IM_Client.Views;
+using System.Windows.Input;
 
 namespace IM_Client.ViewModels
 {
@@ -13,10 +8,10 @@ namespace IM_Client.ViewModels
     {
         public InfoDialogViewModel()
         {
-
         }
 
         private bool _isInfoDialogOpen;
+
         public bool IsInfoDialogOpen
         {
             get { return _isInfoDialogOpen; }
@@ -28,6 +23,7 @@ namespace IM_Client.ViewModels
         }
 
         private object _dialogContent;
+
         public object DialogContent
         {
             get { return _dialogContent; }
@@ -39,6 +35,7 @@ namespace IM_Client.ViewModels
         }
 
         private string _info;
+
         public string Info
         {
             get { return _info; }
@@ -46,7 +43,9 @@ namespace IM_Client.ViewModels
         }
 
         #region Open Dialog Command
+
         private ICommand _openDialogCommand;
+
         public ICommand OpenDialogCommand
         {
             get
@@ -67,9 +66,11 @@ namespace IM_Client.ViewModels
             return DialogContent != null
                 && !IsInfoDialogOpen;
         }
-        #endregion
+
+        #endregion Open Dialog Command
 
         private ICommand _cancelCommand;
+
         public ICommand CancelCommand
         {
             get

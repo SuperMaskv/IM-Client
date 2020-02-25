@@ -28,8 +28,7 @@
                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                    IsOpen="{Binding IsInfoDialogOpen}"
                                    DialogContent="{Binding DialogContent}"
-                                   CloseOnClickAway="True" 
-                                   />
+                                   CloseOnClickAway="True" />
 
         <ContentControl Content="{Binding}" Style="{StaticResource ChatContentStyle}" />
     </Grid>

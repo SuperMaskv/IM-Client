@@ -115,10 +115,12 @@
     <Compile Include="Protocol\ServerPacket\AddContactPacket.cs" />
     <Compile Include="Protocol\ServerPacket\ContactListPacket.cs" />
     <Compile Include="Protocol\ServerPacket\EditContactAliasPacket.cs" />
+    <Compile Include="Protocol\ServerPacket\FileTransferPacket.cs" />
     <Compile Include="Protocol\ServerPacket\LoginPacket.cs" />
     <Compile Include="Protocol\ServerPacket\LogoutPacket.cs" />
     <Compile Include="Protocol\ServerPacket\OfflineContactPacket.cs" />
     <Compile Include="Protocol\ServerPacket\OnlineContactPacket.cs" />
+    <Compile Include="Protocol\ServerPacket\RegisterPacket.cs" />
     <Compile Include="Protocol\ServerPacket\RemoveContactPacket.cs" />
     <Compile Include="Protocol\ServerPacket\ResponsePacket.cs" />
     <Compile Include="Protocol\ServerPacket\ToUserMessagePacket.cs" />

@@ -67,10 +67,10 @@
             </Style>
 
             <Style x:Key="FileTransferStyle" TargetType="{x:Type ContentControl}">
-                <Setter Property="ContentTemplate" Value="{StaticResource SendFileTemplate}"/>
+                <Setter Property="ContentTemplate" Value="{StaticResource SendFileTemplate}" />
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding SendFileMode}" Value="{x:Static enums:SendFileMode.Receive}">
-                        <Setter Property="ContentTemplate" Value="{StaticResource ReceiveFileTemplate}"/>
+                        <Setter Property="ContentTemplate" Value="{StaticResource ReceiveFileTemplate}" />
                     </DataTrigger>
                 </Style.Triggers>
             </Style>

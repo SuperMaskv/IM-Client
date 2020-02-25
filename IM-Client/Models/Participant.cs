@@ -7,6 +7,7 @@ namespace IM_Client.Models
     public class Participant : ViewModelBase
     {
         private string _userName;
+
         public string UserName
         {
             get { return _userName; }
@@ -16,6 +17,7 @@ namespace IM_Client.Models
                 OnPropertyChanged();
             }
         }
+
         public string TrueName { get; set; }
         public byte[] Photo { get; set; }
         public ObservableCollection<ChatMessage> ChatMessages { get; set; }

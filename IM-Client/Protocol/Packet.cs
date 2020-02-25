@@ -6,7 +6,6 @@
 
         public long token { get; set; }
 
-
         public byte getVersion()
         {
             return 1;

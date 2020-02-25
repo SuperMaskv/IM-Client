@@ -1,6 +1,7 @@
 ﻿using IM_Client.Commands;
 using IM_Client.Enums;
 using IM_Client.Protocol.NoServerPacket;
+using IM_Client.Protocol.ServerPacket;
 using IM_Client.Services;
 using IM_Client.Utils;
 using System;
@@ -9,6 +10,7 @@ using System.Net;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
+using IM_Client.Protocol;
 
 namespace IM_Client.ViewModels
 {
@@ -22,6 +24,8 @@ namespace IM_Client.ViewModels
         private ViewModelLocator locator = (ViewModelLocator)Application.Current.Resources["VMLocator"];
 
         public IPEndPoint REMOTE;
+        public Thread LISTEN;
+        public Thread SEND;
 
         public FileTransferWindowViewModel(IDialogService dialogService, IChatService chatService)
         {
@@ -31,6 +35,10 @@ namespace IM_Client.ViewModels
             _send = new FileTransfer.Send();
             _receive = new FileTransfer.Receive();
             CTS = new CancellationTokenSource();
+            LISTEN = new Thread(new ThreadStart(Listen));
+            LISTEN.IsBackground = true;
+            SEND = new Thread(new ThreadStart(Send));
+            SEND.IsBackground = true;
 
             _send.ProgressPercent += delegate (object o, double progress) { SendProgress = progress; };
             _send.StatusMessage += delegate (object o, string status) { SendStatus = status; };
@@ -40,8 +48,37 @@ namespace IM_Client.ViewModels
             _receive.StatusMessage += delegate (object o, string status) { ReceiveStatus = status; };
         }
 
-        private SendFileMode _sendFileMode;
+        private bool _hasServer;
+        public bool HasServer
+        {
+            get
+            {
+                return _hasServer;
+            }
+            set
+            {
+                _hasServer = value;
+                SendButtonCommand = _hasServer ? SendFileCommand : NoServerSendFileCommand;
+                OnPropertyChanged();
+            }
+        }
 
+        private ICommand _sendButtonCommand;
+        public ICommand SendButtonCommand
+        {
+            get
+            {
+                return _sendButtonCommand ?? (_sendButtonCommand
+                    = NoServerSendFileCommand);
+            }
+            set
+            {
+                _sendButtonCommand = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private SendFileMode _sendFileMode;
         public SendFileMode SendFileMode
         {
             get { return _sendFileMode; }
@@ -79,6 +116,17 @@ namespace IM_Client.ViewModels
             }
         }
 
+        private Models.Participant _selectedParticipant;
+        public Models.Participant SelectedParticipant
+        {
+            get { return _selectedParticipant; }
+            set
+            {
+                _selectedParticipant = value;
+                OnPropertyChanged();
+            }
+        }
+
         #region Send File Without Server Command
 
         private ICommand _noServerSendFileCommand;
@@ -88,11 +136,11 @@ namespace IM_Client.ViewModels
             get
             {
                 return _noServerSendFileCommand ?? (_noServerSendFileCommand
-                  = new RelayCommand((o) => SendFileRequest()));
+                  = new RelayCommand((o) => NoServerSendFileRequest()));
             }
         }
 
-        public void SendFileRequest()
+        public void NoServerSendFileRequest()
         {
             FilePath = dialogService.OpenFile("选择文件");
 
@@ -184,12 +232,13 @@ namespace IM_Client.ViewModels
 
         public void Listen()
         {
-            
+
             ThreadPool.QueueUserWorkItem(new WaitCallback((o) =>
             {
+                var local = (IPEndPoint)locator.MainWindowVM.TcpClient.Client.LocalEndPoint;
                 CancellationToken token = (CancellationToken)o;
                 if (token.IsCancellationRequested) return;
-                _receive.ReceiveFile(IPAddress.Any, 8888, AppDomain.CurrentDomain.BaseDirectory);
+                _receive.ReceiveFile(IPAddress.Any, local.Port+1, AppDomain.CurrentDomain.BaseDirectory);
             }), CTS.Token);
         }
 
@@ -197,7 +246,7 @@ namespace IM_Client.ViewModels
         {
             ThreadPool.QueueUserWorkItem(new WaitCallback((o) =>
             {
-                _send.SendFile(REMOTE.Address, 8888, FilePath, IsCheckSum);
+                _send.SendFile(REMOTE.Address, REMOTE.Port, FilePath, IsCheckSum);
             }));
         }
 
@@ -214,8 +263,10 @@ namespace IM_Client.ViewModels
 
         private void CancelReceive()
         {
-            CTS.Cancel();
-            CTS.Dispose();
+            if (LISTEN.IsAlive)
+            {
+                LISTEN.Abort();
+            }
             foreach (var window in Application.Current.Windows)
             {
                 if (window.GetType() == typeof(FileTransferWindow))
@@ -225,6 +276,44 @@ namespace IM_Client.ViewModels
             }
         }
 
+        #endregion
+
+        #region Send File With Server Command
+        private ICommand _sendFileCommand;
+        public ICommand SendFileCommand
+        {
+            get
+            {
+                return _sendFileCommand ?? (_sendFileCommand
+                    = new RelayCommand((o) => SendFileRequest()));
+            }
+        }
+
+        private void SendFileRequest()
+        {
+            //获取文件信息
+            FilePath = dialogService.OpenFile("选择文件");
+
+            var fileName = Path.GetFileName(FilePath);
+            //获取NetworkStream
+            var stream = locator.MainWindowVM.TcpClient.GetStream();
+            //构建请求报文
+            FileTransferPacket request = new FileTransferPacket()
+            {
+                token = locator.MainWindowVM.Token,
+                requestFlag = true,
+                fileSender = locator.MainWindowVM.UserName,
+                fileReceiver = SelectedParticipant.TrueName,
+                fileName = fileName
+            };
+            //Encode
+            var packetBytes = PacketCodec.INSTANCE.Encode(request);
+            //发送
+            if (stream.CanWrite)
+            {
+                stream.Write(packetBytes, 0, packetBytes.Length);
+            }
+        }
         #endregion
     }
 }

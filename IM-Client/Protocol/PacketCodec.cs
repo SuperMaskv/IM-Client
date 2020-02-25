@@ -4,10 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-/*
- *
- */
-
 namespace IM_Client.Protocol
 {
     public class PacketCodec
@@ -35,6 +31,8 @@ namespace IM_Client.Protocol
             packetMap.Add(PacketType.ONLINE_CONTACT, new ServerPacket.OnlineContactPacket());
             packetMap.Add(PacketType.OFFLINE_CONTACT, new ServerPacket.OfflineContactPacket());
             packetMap.Add(PacketType.TO_USER_MESSAGE, new ServerPacket.ToUserMessagePacket());
+            packetMap.Add(PacketType.FILE_TRANSFER, new ServerPacket.FileTransferPacket());
+            packetMap.Add(PacketType.REGISTER, new ServerPacket.RegisterPacket());
         }
 
         public byte[] Encode(Packet packet)

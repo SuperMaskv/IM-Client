@@ -7,16 +7,22 @@ using System.Linq;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Net.Sockets;
+using System.Net;
+using System.Windows.Interop;
+using System.Runtime.InteropServices;
 
 namespace IM_Client.Protocol.Handler
 {
     public class ServerPacketHandler
     {
-        public delegate void ServerPacketHandlers(Packet packet);
-        public ServerPacketHandlers handlers;
         public static readonly ServerPacketHandler INSTANCE = new ServerPacketHandler();
+
+        public ServerPacketHandlers handlers;
+
         private ViewModelLocator locator = (ViewModelLocator)Application.Current.Resources["VMLocator"];
 
+        [DllImport("user32")] public static extern int FlashWindow(IntPtr hwnd, bool bInvert);
 
         public ServerPacketHandler()
         {
@@ -27,6 +33,110 @@ namespace IM_Client.Protocol.Handler
             handlers += EditContactAliasPacketHandler;
             handlers += RemoveContactPacketHandler;
             handlers += ToUserMsgPacketHandler;
+            handlers += FileTransferPacketHandler;
+            handlers += RegisterResponseHandler;
+        }
+
+        public delegate void ServerPacketHandlers(Packet packet);
+        private void ContactListPacketHanler(Packet packet)
+        {
+            if (!(packet is ContactListPacket)) return;
+            Console.WriteLine("Receive ContactListPacket");
+            ContactListPacket contactListPacket = (ContactListPacket)packet;
+
+            //遍历联系人列表，并装载到UI中
+            foreach (var contact in contactListPacket.contacts)
+            {
+                Application.Current.Dispatcher.Invoke(delegate
+                {
+                    locator.MainWindowVM.Participants.Add(new Participant()
+                    {
+                        UserName = contact.alias == null ? contact.contactName : contact.alias,
+                        TrueName = contact.contactName,
+                        Photo = contact.photo,
+                        IsLoggedIn = false
+                    });
+                });
+
+            }
+        }
+
+        private void EditContactAliasPacketHandler(Packet packet)
+        {
+            if (!(packet is EditContactAliasPacket)) return;
+            Console.WriteLine("Receive EditContactAliasPacket");
+            EditContactAliasPacket response = (EditContactAliasPacket)packet;
+
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                var person = locator.MainWindowVM.Participants
+                                .Where((p) => p.TrueName.Equals(response.contactName))
+                                .FirstOrDefault();
+                person.UserName = response.alias;
+            });
+        }
+
+        private void FileTransferPacketHandler(Packet packet)
+        {
+            if (!(packet is FileTransferPacket)) return;
+            Console.WriteLine("Receive FileTransferPacket");
+
+            FileTransferPacket fileTransferPacket = (FileTransferPacket)packet;
+            //判断是什么报文
+            if (fileTransferPacket.requestFlag)
+            {
+                //请求报文：让用户决定是否接收文件
+                string messageBoxText = "用户 "
+                                        + fileTransferPacket.fileSender
+                                        + " 想要发送给您 "
+                                        + fileTransferPacket.fileName
+                                        + " 是否接受？";
+                MessageBoxResult result = MessageBox.Show(messageBoxText, "", MessageBoxButton.YesNo);
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        fileTransferPacket.agreeFlag = true;
+                        //打开FileTransferWindow
+                        locator.FileTransferWindowViewModel.SendFileMode = Enums.SendFileMode.Receive;
+                        locator.FileTransferWindowViewModel.LISTEN.Start();
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            FileTransferWindow window = new FileTransferWindow();
+                            window.Show();
+                        });
+                        break;
+                    case MessageBoxResult.No:
+                        fileTransferPacket.agreeFlag = false;
+                        break;
+                }
+                fileTransferPacket.requestFlag = false;
+                //发送应答报文
+                var stream = locator.MainWindowVM.TcpClient.GetStream();
+                var packetBytes = PacketCodec.INSTANCE.Encode(fileTransferPacket);
+                if (stream.CanWrite)
+                {
+                    stream.Write(packetBytes, 0, packetBytes.Length);
+                }
+            }
+            else
+            {
+                //应答报文：如果对方同意接收，发送文件，反之弹出提醒
+                if (fileTransferPacket.agreeFlag)
+                {
+                    locator.FileTransferWindowViewModel.REMOTE
+                        = new IPEndPoint(IPAddress.Parse(fileTransferPacket.receiverAddress.Substring(1))
+                        , fileTransferPacket.receiverPort + 1);
+                    locator.FileTransferWindowViewModel.SEND.Start();
+                }
+                else
+                {
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        locator.InfoDialogViewModel.Info = "对方拒绝接收文件";
+                        locator.InfoDialogViewModel.OpenDialogCommand.Execute(new object());
+                    });
+                }
+            }
         }
 
         private void LoginResponseHandler(Packet packet)
@@ -66,27 +176,19 @@ namespace IM_Client.Protocol.Handler
                 Console.WriteLine(ex.Message);
             }
         }
-
-        private void ContactListPacketHanler(Packet packet)
+        private void OfflineContactPacketHandler(Packet packet)
         {
-            if (!(packet is ContactListPacket)) return;
-            Console.WriteLine("Receive ContactListPacket");
-            ContactListPacket contactListPacket = (ContactListPacket)packet;
+            if (!(packet is OfflineContactPacket)) return;
+            Console.WriteLine("Receive OfflineContactPacket");
 
-            //遍历联系人列表，并装载到UI中
-            foreach (var contact in contactListPacket.contacts)
+            OfflineContactPacket offline = (OfflineContactPacket)packet;
+
+            foreach (var participant in locator.MainWindowVM.Participants)
             {
-                Application.Current.Dispatcher.Invoke(delegate
+                if (participant.TrueName.Equals(offline.userName))
                 {
-                    locator.MainWindowVM.Participants.Add(new Participant()
-                    {
-                        UserName = contact.alias == null ? contact.contactName : contact.alias,
-                        TrueName = contact.contactName,
-                        Photo = contact.photo,
-                        IsLoggedIn = false
-                    });
-                });
-
+                    participant.IsLoggedIn = false;
+                }
             }
         }
 
@@ -107,38 +209,6 @@ namespace IM_Client.Protocol.Handler
                 }
             }
         }
-
-        private void OfflineContactPacketHandler(Packet packet)
-        {
-            if (!(packet is OfflineContactPacket)) return;
-            Console.WriteLine("Receive OfflineContactPacket");
-
-            OfflineContactPacket offline = (OfflineContactPacket)packet;
-
-            foreach (var participant in locator.MainWindowVM.Participants)
-            {
-                if (participant.TrueName.Equals(offline.userName))
-                {
-                    participant.IsLoggedIn = false;
-                }
-            }
-        }
-
-        private void EditContactAliasPacketHandler(Packet packet)
-        {
-            if (!(packet is EditContactAliasPacket)) return;
-            Console.WriteLine("Receive EditContactAliasPacket");
-            EditContactAliasPacket response = (EditContactAliasPacket)packet;
-
-            Application.Current.Dispatcher.Invoke(delegate
-            {
-                var person = locator.MainWindowVM.Participants
-                                .Where((p) => p.TrueName.Equals(response.contactName))
-                                .FirstOrDefault();
-                person.UserName = response.alias;
-            });
-        }
-
         private void RemoveContactPacketHandler(Packet packet)
         {
             if (!(packet is RemoveContactPacket)) return;
@@ -176,7 +246,7 @@ namespace IM_Client.Protocol.Handler
                         {
                             Author = message.msgSender,
                             Message = message.msgContent,
-                            Time = DateTime.Now,
+                            Time = message.sendTime,
                             IsOriginNative = false
                         });
                         if (locator.MainWindowVM.SelectedParticipant == null
@@ -207,7 +277,7 @@ namespace IM_Client.Protocol.Handler
                         {
                             Author = message.msgSender,
                             Picture = Path.GetFullPath(picName + ".jpg"),
-                            Time = DateTime.Now,
+                            Time = message.sendTime,
                             IsOriginNative = false
                         });
                         if (locator.MainWindowVM.SelectedParticipant == null
@@ -219,6 +289,24 @@ namespace IM_Client.Protocol.Handler
                         }
                     }
                 }
+
+                //任务栏闪烁
+                WindowInteropHelper wih = new WindowInteropHelper(Application.Current.MainWindow);
+                FlashWindow(wih.Handle, true);
+            });
+        }
+
+        private void RegisterResponseHandler(Packet packet)
+        {
+            if (!(packet is ResponsePacket)) return;
+            ResponsePacket response = (ResponsePacket)packet;
+            if (response.packetType != PacketType.REGISTER) return;
+            Console.WriteLine("Receive RegisterResponsePacket");
+
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                locator.InfoDialogViewModel.Info = response.info;
+                locator.InfoDialogViewModel.OpenDialogCommand.Execute(new object());
             });
         }
     }

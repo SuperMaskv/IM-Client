@@ -137,9 +137,12 @@ namespace IM_Client.ViewModels
             set
             {
                 _hasServer = value;
+                locator.FileTransferWindowViewModel.HasServer = value;
                 LoginButtonCommand = _hasServer ? LoginCommand : NoServerLoginCommand;
                 ClosingEventCommand = _hasServer ? LogoutCommand : NoServerLogoutCommand;
                 SendTxtMsgButtonCommand = _hasServer ? SendTextMsgCommand : NoServerTextMsgCommand;
+                SendPicMsgButtonCommand = _hasServer ? SendPicMsgCommand : NoServerPicMsgCommand;
+                //FileTransferButtonCommand = _hasServer ? FileTransferCommand : OpenFileTransferWindow;
                 OnPropertyChanged();
             }
         }
@@ -190,6 +193,36 @@ namespace IM_Client.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        private ICommand _sendPicMsgButtonCommand;
+        public ICommand SendPicMsgButtonCommand
+        {
+            get
+            {
+                return _sendPicMsgButtonCommand ?? (_sendPicMsgButtonCommand
+                    = NoServerPicMsgCommand);
+            }
+            set
+            {
+                _sendPicMsgButtonCommand = value;
+                OnPropertyChanged();
+            }
+        }
+
+        //private ICommand _fileTransferButtonCommand;
+        //public ICommand FileTransferButtonCommand
+        //{
+        //    get
+        //    {
+        //        return _fileTransferCommand ?? (_fileTransferCommand
+        //            = OpenFileTransferWindow);
+        //    }
+        //    set
+        //    {
+        //        _fileTransferButtonCommand = value;
+        //        OnPropertyChanged();
+        //    }
+        //}
         #endregion
 
         private UserModes _userMode;
@@ -480,7 +513,15 @@ namespace IM_Client.ViewModels
 
         public bool CanOpenFileTransferWindow()
         {
-            return SelectedParticipant != null;
+
+            if (HasServer)
+            {
+                return SelectedParticipant != null && SelectedParticipant.IsLoggedIn;
+            }
+            else
+            {
+                return SelectedParticipant != null;
+            }
         }
 
         public void OpenWindow()
@@ -488,7 +529,11 @@ namespace IM_Client.ViewModels
             FileTransferWindow window = new FileTransferWindow();
             var locator = (ViewModelLocator)Application.Current.Resources["VMLocator"];
             locator.FileTransferWindowViewModel.SendFileMode = SendFileMode.Send;
-            locator.FileTransferWindowViewModel.REMOTE = SelectedParticipant.Remote;
+            locator.FileTransferWindowViewModel.SelectedParticipant = SelectedParticipant;
+            if (SelectedParticipant.Remote != null)
+            {
+                locator.FileTransferWindowViewModel.REMOTE = SelectedParticipant.Remote;
+            }
             window.Show();
         }
 
@@ -519,7 +564,7 @@ namespace IM_Client.ViewModels
                 && Int32.TryParse(ServerPort, out intTest);
         }
 
-        private Thread tcpPacketHandler;
+        public Thread tcpPacketHandler;
 
         private void Login(object o)
         {
@@ -527,7 +572,10 @@ namespace IM_Client.ViewModels
             {
                 var pwd = ((PasswordBox)o).Password;
                 //与服务器建立tcp连接
-                TcpClient = new TcpClient(ServerAddress, int.Parse(ServerPort));
+                if (TcpClient == null)
+                {
+                    TcpClient = new TcpClient(ServerAddress, int.Parse(ServerPort));
+                }
                 //获取stream对象
                 NetworkStream stream = TcpClient.GetStream();
                 //创建登录报文
@@ -545,8 +593,11 @@ namespace IM_Client.ViewModels
 
                 }
                 //建立监听线程
-                tcpPacketHandler = new Thread(new ThreadStart(Spliter));
-                tcpPacketHandler.Start();
+                if (tcpPacketHandler == null || !tcpPacketHandler.IsAlive)
+                {
+                    tcpPacketHandler = new Thread(new ThreadStart(Spliter));
+                    tcpPacketHandler.Start();
+                }
             }
             catch (Exception ex)
             {
@@ -714,7 +765,8 @@ namespace IM_Client.ViewModels
                 token = Token,
                 msgSender = UserName,
                 msgRecipient = SelectedParticipant.TrueName,
-                msgContent = TextMessage
+                msgContent = TextMessage,
+                sendTime = DateTime.Now
             };
             //Encode
             var packetBytes = PacketCodec.INSTANCE.Encode(textMsg);
@@ -734,6 +786,127 @@ namespace IM_Client.ViewModels
             //清空输入框
             TextMessage = string.Empty;
         }
+        #endregion
+
+        #region Send Pic Message With Server
+        private ICommand _sendPicMsgCommand;
+        public ICommand SendPicMsgCommand
+        {
+            get
+            {
+                return _sendPicMsgCommand ?? (_sendPicMsgCommand
+                    = new RelayCommandAsync(() => SendPicMsg(), (o) => CanSendPicMsg()));
+            }
+        }
+
+        private bool CanSendPicMsg()
+        {
+            return SelectedParticipant != null;
+        }
+
+        private async Task<bool> SendPicMsg()
+        {
+            //获取图片信息
+            var pic = dialogService.OpenFile("选择图片", "Images (*.jpg;*.png)|*.jpg;*.png");
+            if (string.IsNullOrEmpty(pic)) return false;
+
+            var img = await Task.Run(() => File.ReadAllBytes(pic));
+
+            if (img.Length > 61440)
+            {
+                dialogService.ShowNotification("图片过大，请选择小于等于60KB的图片");
+                return false;
+            }
+
+            //构建报文并发送
+            try
+            {
+                var stream = TcpClient.GetStream();
+                ToUserMessagePacket messagePacket = new ToUserMessagePacket()
+                {
+                    token = Token,
+                    msgSender = UserName,
+                    msgRecipient = SelectedParticipant.TrueName,
+                    photo = img,
+                    sendTime = DateTime.Now
+                };
+                //Encode
+                var packetBytes = PacketCodec.INSTANCE.Encode(messagePacket);
+                if (stream.CanWrite)
+                {
+                    stream.Write(packetBytes, 0, packetBytes.Length);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            finally
+            {
+                SelectedParticipant.ChatMessages.Add(new ChatMessage()
+                {
+                    Author = UserName,
+                    Picture = pic,
+                    Time = DateTime.Now,
+                    IsOriginNative = true
+                });
+            }
+        }
+        #endregion
+
+        #region Register Command
+        private ICommand _registerCommand;
+        public ICommand RegisterCommand
+        {
+            get
+            {
+                return _registerCommand ?? (_registerCommand
+                    = new RelayCommand((o) => Register(o), (o) => CanRegister(o)));
+            }
+        }
+
+        private bool CanRegister(object o)
+        {
+            var pwd = ((PasswordBox)o).Password;
+            IPAddress ipTest;
+            int intTest;
+            return !string.IsNullOrEmpty(UserName)
+                && !string.IsNullOrEmpty(pwd)
+                && !string.IsNullOrEmpty(ServerAddress)
+                && !string.IsNullOrEmpty(ServerPort)
+                && IPAddress.TryParse(ServerAddress, out ipTest)
+                && Int32.TryParse(ServerPort, out intTest);
+        }
+
+        private void Register(object o)
+        {
+            var pwd = ((PasswordBox)o).Password;
+            RegisterPacket register = new RegisterPacket()
+            {
+                userName = UserName,
+                userPwd = pwd
+            };
+            if (TcpClient == null)
+            {
+                TcpClient = new TcpClient(ServerAddress, int.Parse(ServerPort));
+            }
+            var stream = TcpClient.GetStream();
+            //建立监听线程
+            if (tcpPacketHandler == null || !tcpPacketHandler.IsAlive)
+            {
+                tcpPacketHandler = new Thread(new ThreadStart(Spliter));
+                tcpPacketHandler.Start();
+            }
+
+            var packetBytes = PacketCodec.INSTANCE.Encode(register);
+            if (stream.CanWrite)
+            {
+                stream.Write(packetBytes, 0, packetBytes.Length);
+            }
+        }
+
         #endregion
     }
 }

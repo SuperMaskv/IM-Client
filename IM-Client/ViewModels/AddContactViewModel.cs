@@ -1,21 +1,24 @@
 ﻿using IM_Client.Commands;
+using IM_Client.Protocol;
 using IM_Client.Protocol.ServerPacket;
 using IM_Client.Utils;
 using IM_Client.Views;
 using System.Net.Sockets;
 using System.Windows;
 using System.Windows.Input;
-using IM_Client.Protocol;
 
 namespace IM_Client.ViewModels
 {
     public class AddContactViewModel : ViewModelBase
     {
-        public AddContactViewModel() { }
+        public AddContactViewModel()
+        {
+        }
 
         private ViewModelLocator locator = (ViewModelLocator)Application.Current.Resources["VMLocator"];
 
         private bool _isDialogOpen;
+
         public bool IsDialogOpen
         {
             get { return _isDialogOpen; }
@@ -27,6 +30,7 @@ namespace IM_Client.ViewModels
         }
 
         private object _dialogContent;
+
         public object DialogContent
         {
             get { return _dialogContent; }
@@ -38,7 +42,9 @@ namespace IM_Client.ViewModels
         }
 
         #region Open Dialog Command
+
         private ICommand _openDialogCommand;
+
         public ICommand OpenDialogCommand
         {
             get
@@ -58,10 +64,13 @@ namespace IM_Client.ViewModels
             DialogContent = new AddContactView();
             IsDialogOpen = true;
         }
-        #endregion
+
+        #endregion Open Dialog Command
 
         #region Cancel Button Command
+
         private ICommand _cancelButtonCommand;
+
         public ICommand CancelButtonCommand
         {
             get
@@ -75,11 +84,13 @@ namespace IM_Client.ViewModels
         {
             IsDialogOpen = false;
         }
-        #endregion
+
+        #endregion Cancel Button Command
 
         #region OK Button Command
 
         private string _contactName;
+
         public string ContactName
         {
             get { return _contactName; }
@@ -91,6 +102,7 @@ namespace IM_Client.ViewModels
         }
 
         private string _alias;
+
         public string Alias
         {
             get { return _alias; }
@@ -102,6 +114,7 @@ namespace IM_Client.ViewModels
         }
 
         private ICommand _okButtonCommand;
+
         public ICommand OkButtonCommand
         {
             get
@@ -135,6 +148,7 @@ namespace IM_Client.ViewModels
             //发送报文
             stream.Write(packetBytes, 0, packetBytes.Length);
         }
-        #endregion
+
+        #endregion OK Button Command
     }
 }

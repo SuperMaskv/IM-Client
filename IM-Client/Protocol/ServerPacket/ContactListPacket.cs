@@ -1,9 +1,5 @@
-﻿using System;
+﻿using IM_Client.Models;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using IM_Client.Models;
 
 namespace IM_Client.Protocol.ServerPacket
 {

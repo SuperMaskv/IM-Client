@@ -69,5 +69,8 @@
 
         //群聊消息数据包
         public static readonly byte TO_GROUP_MESSAGE = 0x0D;
+
+        //文件沟通报文
+        public static readonly byte FILE_TRANSFER = 0x11;
     }
 }

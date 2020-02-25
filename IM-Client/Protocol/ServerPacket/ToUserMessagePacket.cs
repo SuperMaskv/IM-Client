@@ -1,4 +1,6 @@
-﻿namespace IM_Client.Protocol.ServerPacket
+﻿using System;
+
+namespace IM_Client.Protocol.ServerPacket
 {
     public class ToUserMessagePacket : Packet
     {
@@ -6,7 +8,7 @@
         public string msgRecipient { get; set; }
         public string msgContent { get; set; }
         public byte[] photo { get; set; }
-
+        public DateTime sendTime { get; set; }
 
         public override byte getPacketType()
         {

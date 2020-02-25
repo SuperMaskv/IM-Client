@@ -40,6 +40,7 @@ namespace IM_Client.Utils
         }
 
         private InfoDialogViewModel _infoDialogViewModel;
+
         public InfoDialogViewModel InfoDialogViewModel
         {
             get
@@ -50,6 +51,7 @@ namespace IM_Client.Utils
         }
 
         private AddContactViewModel _addContactViewModel;
+
         public AddContactViewModel AddContactViewModel
         {
             get
@@ -60,6 +62,7 @@ namespace IM_Client.Utils
         }
 
         private EditContactAliasViewModel _editContactAliasViewModel;
+
         public EditContactAliasViewModel EditContactAliasViewModel
         {
             get
